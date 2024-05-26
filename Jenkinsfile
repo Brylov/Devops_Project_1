@@ -17,7 +17,7 @@ pipeline {
                 script {
                     def dockerImage = docker.image('translator-test').run("--network jenkins_nw")                  
                     // Run pytest inside the Docker container
-                    dockerImage.inside {
+                    dockerImage.inside() {
                         sh 'pytest'
                     }
                 }
