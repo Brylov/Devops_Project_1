@@ -1,0 +1,16 @@
+services:
+  app:
+    build: .
+    ports: 
+      - 8080:8080
+      - 50000:50000
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - jenkins_nw
+volumes:
+  jenkins_home:
+networks:
+  jenkins_nw:
+    external: true 
