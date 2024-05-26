@@ -15,7 +15,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    docker.image('translator-test').run("--name translator_jenkins_test --network jenkins_nw")                  
+                    docker.image('translator-test').run("--rm --name translator_jenkins_test --network jenkins_nw")                  
                     // Run pytest inside the Docker container
                     sh 'docker exec translator_jenkins_test pytest'
                 }
@@ -24,7 +24,7 @@ pipeline {
                 always {
                     // Remove Docker container after test stage
                     script {
-                        docker.container('translator_jenkins_test').remove()
+                        sh 'docker stop translator_jenkins_test'
                     }
                 }
             }
