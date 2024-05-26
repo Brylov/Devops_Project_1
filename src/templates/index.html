@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English to Japanese Translator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/output.css') }}">
+</head>
+<body class="bg-gray-300 h-screen flex flex-col justify-center items-center">
+    <h1 class="text-3xl font-bold mb-8">English to Japanese Translator</h1>
+    <div class="container mx-auto flex flex-col md:flex-row justify-center items-center md:space-x-8 space-y-8 md:space-y-0 w-full px-4">
+        <div class="box w-full md:w-1/2 p-4 bg-gray-50 border border-gray-300 rounded-lg shadow-md">
+            <label for="englishText" class="block mb-2 text-lg font-medium text-gray-700">Enter English Text:</label>
+            <textarea id="englishText" name="englishText" rows="8" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+        </div>
+        <div class="box w-full md:w-1/2 p-4 bg-gray-200 border border-gray-300 rounded-lg shadow-md">
+            <label for="translationResult" class="block mb-2 text-lg font-medium text-gray-700">Translated Text:</label>
+            <div id="translationResult" class="translation p-2 border border-gray-300 rounded-lg h-32 bg-gray-50"></div>
+            <button id="playTTS" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Play Audio</button>
+            <audio id="ttsAudio" controls class="mt-4 w-full" style="display:none;">
+                <source id="ttsSource" src="" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("englishText").addEventListener("input", function() {
+            const englishText = document.getElementById("englishText").value;
+            fetch('/translate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: englishText })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("translationResult").innerText = data.translated_text;
+                // Reset audio player and hide it
+                document.getElementById("ttsSource").setAttribute("src", "");
+                document.getElementById("ttsAudio").style.display = "none";
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById("playTTS").addEventListener("click", function() {
+            const translatedText = document.getElementById("translationResult").innerText;
+            fetch('/tts', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text: translatedText })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const ttsAudio = document.getElementById("ttsAudio");
+                const ttsSource = document.getElementById("ttsSource");
+                // Add a cache-busting parameter to the TTS URL
+                ttsSource.src = data.tts_url + '?cb=' + new Date().getTime();
+                ttsAudio.load();
+                ttsAudio.play();
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+</body>
+</html>
