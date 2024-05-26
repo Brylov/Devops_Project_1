@@ -14,7 +14,7 @@ if ! docker network inspect "$network_name" &>/dev/null; then
     docker network create "$network_name"
 fi
 # Start Jenkins environment with Docker Compose
-docker compose up -d
+docker compose up --build -d
 
 # Define the path to the initialAdminPassword file inside the container
 password_file="/var/jenkins_home/secrets/initialAdminPassword"
