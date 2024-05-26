@@ -2,16 +2,33 @@ pipeline {
     agent any
     
     stages {
-        stage('Build') {
+        stage('Build && Run') {
             steps {
-                // Replace this with your build steps
-                sh 'echo "Building..."'
+                // Build Docker image
+                script {
+                    docker.build('translator-test')
+                    //sh "docker run --rm --name portfolio-translator --network jenkins_nw -d translator-test"
+                }
             }
+
         }
         stage('Test') {
             steps {
-                // Replace this with your test steps
-                sh 'echo "Testing..."'
+                script {
+                    def dockerImage = docker.image('translator-test').run("--network jenkins_nw")                  
+                    // Run pytest inside the Docker container
+                    dockerImage.inside {
+                        sh 'pytest'
+                    }
+                }
+            }
+            post {
+                always {
+                    // Remove Docker container after test stage
+                    script {
+                        docker.image('translator-test').remove()
+                    }
+                }
             }
         }
         stage('Deploy') {
@@ -22,18 +39,9 @@ pipeline {
         }
     }
     
-    post {
-        always {
-            // Cleanup steps that should always run, regardless of success or failure
-            sh 'echo "Cleaning up..."'
-        }
-        success {
-            // Actions to perform if the pipeline succeeds
-            sh 'echo "Pipeline succeeded!"'
-        }
-        failure {
-            // Actions to perform if the pipeline fails
-            sh 'echo "Pipeline failed!"'
+    post { 
+        always { 
+            cleanWs()
         }
     }
 }
