@@ -1,0 +1,11 @@
+src/__pycache__
+src/*.pyc
+src/*.pyo
+src/*.pyd
+src/*.db
+src/*.sqlite3
+src/*.log
+src/node_modules
+src/build
+src/dist
+src/dicpy
