@@ -1,0 +1,23 @@
+### ./initdb.d/init-mongo.js
+
+db = db.getSiblingDB("Translator");
+db.createCollection('TranslatorHistory');
+db.createUser({
+    user: "user",
+    pwd: "password",
+    roles: [{
+            role: "readWrite",
+            db: "Translator"
+        }
+    ]
+});
+
+
+
+### .env
+
+MONGODB_URI='mongodb://user:password@mongodb:27017/Translator'
+MONGO_INITDB_ROOT_USERNAME='root'
+MONGO_INITDB_ROOT_PASSWORD='rootpassword'
+
+
