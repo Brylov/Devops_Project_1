@@ -1,0 +1,38 @@
+backend - python - RESTAPI:
+    pip install requirement.txt
+    python app.py
+
+frontend:
+    npm init -y
+    npm install tailwindcss postcss-cli autoprefixer flowbite
+    npx tailwindcss -i ./static/src/input.css -o ./static/dist/css/output.css --watch
+
+docker:
+    docker error with socket even when givin the right group and share the socket correctly
+    "ERROR: permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock:"
+    problem is that the groups in the host and the jenkins is the same name but no the same id 
+    so need to change the grpid in the jenkins container to the same as in the host
+    fixing steps:
+        * checked with `getent group docker` the host docker gid
+        * added the following cmd the the jenkins docker file `RUN groupmod -g <gid> docker` before `RUN usermod -a -G docker jenkins`
+app:
+    adding mongodb to add save word function, 
+    - added .env with the mongo creds (.gitignore config)
+    - requiremenets.txt updated
+EOD:
+    github:
+        made a faulty commit with senstive data (creds of mongo) and pushed it to github,
+        fixed it by this steps:
+        adding the file/folder to .gitignore
+        ```
+        git add .gitignore
+        git commit -m "Add sensitive file to .gitignore 
+        git rm --cached path/to/sensitive/file #to untrack the sensetive file/folder
+        git commit -m "Remove sensitive file from tracking"
+        git push origin dev
+        git log # check what commit i need to delete
+        git rebase -i HEAD~N  #(Replace N with the number of commits to go back i.e if its the third commit so HEAD~3)
+        # deleting the commit line from the file and save
+        git rebase --continue
+        git push origin dev --force
+        ```
