@@ -52,3 +52,5 @@ else
     echo "Error: The initialAdminPassword file was not found after waiting for $max_wait_time seconds." >&2
     exit 1
 fi
+
+wget http://localhost:8080/jnlpJars/jenkins-cli.jar

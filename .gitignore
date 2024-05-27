@@ -164,3 +164,6 @@ dicpy/
 node_modules/
 package.json
 initdb.d/
+*.mp3
+
+

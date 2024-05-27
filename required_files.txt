@@ -14,10 +14,15 @@ db.createUser({
 
 
 
-### .env
+### ./.env
 
 MONGODB_URI='mongodb://user:password@mongodb:27017/Translator'
 MONGO_INITDB_ROOT_USERNAME='root'
 MONGO_INITDB_ROOT_PASSWORD='rootpassword'
+
+### ./jenkins/.env
+JENKINS_URL=<jenkins_url> 
+JENKINS_USER=<user>
+JENKINS_API_TOKEN=<api_token>       # 'generate api token' --- jenkins GUI > user profile > Configure > add new token under API Token
 
 
