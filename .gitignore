@@ -162,4 +162,4 @@ cython_debug/
 #Others
 dicpy/
 node_modules/
-package.json
+package.jsoninitdb.d/
