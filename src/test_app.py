@@ -1,8 +1,11 @@
 import ast
-import codecs
+import os
 from flask import json
 import pytest
 from app import app
+from pymongo import MongoClient, errors
+from dotenv import load_dotenv
+
 
 @pytest.fixture
 def client():
@@ -24,4 +27,21 @@ def test_translation(client):
     # Print response data to console
     assert japanese_string == "こんにちは"
 
-#page not exist check
+def test_page_not_exist(client):
+    response = client.get('/nonexistent')
+    assert response.status_code == 404
+
+def test_mongo_connectivity():
+    load_dotenv()
+    mongodb_uri = os.getenv('MONGODB_URI')
+    
+    if not mongodb_uri:
+        pytest.fail("MONGODB_URI environment variable not set")
+    
+    try:
+        client = MongoClient(mongodb_uri, serverSelectionTimeoutMS=5000)
+        client.server_info()  # Forces a call to the server to check connection
+        assert True
+    except errors.ServerSelectionTimeoutError:
+        pytest.fail("Could not connect to MongoDB")
+
