@@ -6,22 +6,30 @@
     <title>English to Japanese Translator</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='dist/css/output.css') }}">
 </head>
-<body class="bg-gray-300 h-screen flex flex-col justify-center items-center">
-    <h1 class="text-3xl font-bold mb-8">English to Japanese Translator</h1>
-    <div class="container mx-auto flex flex-col md:flex-row justify-center items-center md:space-x-8 space-y-8 md:space-y-0 w-full px-4">
-        <div class="box w-full md:w-1/2 p-4 bg-gray-50 border border-gray-300 rounded-lg shadow-md">
-            <label for="englishText" class="block mb-2 text-lg font-medium text-gray-700">Enter English Text:</label>
-            <textarea id="englishText" name="englishText" rows="8" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
-        </div>
-        <div class="box w-full md:w-1/2 p-4 bg-gray-200 border border-gray-300 rounded-lg shadow-md">
-            <label for="translationResult" class="block mb-2 text-lg font-medium text-gray-700">Translated Text:</label>
-            <div id="translationResult" class="translation p-2 border border-gray-300 rounded-lg h-32 bg-gray-50"></div>
-            <button type="button" id="saveWordButton" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Save Word</button>
-            <button id="playTTS" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Play Audio</button>
-            <audio id="ttsAudio" controls class="mt-4 w-full" style="display:none;">
-                <source id="ttsSource" src="" type="audio/mpeg">
-                Your browser does not support the audio element.
-            </audio>
+<body class="bg-gray-300 h-screen flex">
+    <div class="w-1/4 bg-gray-100 h-full p-4 border-r border-gray-300">
+        <h2 class="text-xl font-bold mb-4">Saved Words</h2>
+        <ul id="savedWordsList" class="space-y-2">
+            <!-- Saved words will be populated here -->
+        </ul>
+    </div>
+    <div class="flex-1 flex flex-col justify-center items-center">
+        <h1 class="text-3xl font-bold mb-8">English to Japanese Translator</h1>
+        <div class="container mx-auto flex flex-col md:flex-row justify-center items-center md:space-x-8 space-y-8 md:space-y-0 w-full px-4">
+            <div class="box w-full md:w-1/2 p-4 bg-gray-50 border border-gray-300 rounded-lg shadow-md">
+                <label for="englishText" class="block mb-2 text-lg font-medium text-gray-700">Enter English Text:</label>
+                <textarea id="englishText" name="englishText" rows="8" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+            </div>
+            <div class="box w-full md:w-1/2 p-4 bg-gray-200 border border-gray-300 rounded-lg shadow-md">
+                <label for="translationResult" class="block mb-2 text-lg font-medium text-gray-700">Translated Text:</label>
+                <div id="translationResult" class="translation p-2 border border-gray-300 rounded-lg h-32 bg-gray-50"></div>
+                <button type="button" id="saveWordButton" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Save Word</button>
+                <button id="playTTS" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Play Audio</button>
+                <audio id="ttsAudio" controls class="mt-4 w-full" style="display:none;">
+                    <source id="ttsSource" src="" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
         </div>
     </div>
 
@@ -38,10 +46,11 @@
             .then(response => response.json())
             .then(data => {
                 document.getElementById("translationResult").innerText = data.translated_text;
-                document.getElementById("saveWordButton").dataset.translatedText = data.translated_text;
                 // Reset audio player and hide it
                 document.getElementById("ttsSource").setAttribute("src", "");
                 document.getElementById("ttsAudio").style.display = "none";
+                // Update save button dataset
+                document.getElementById("saveWordButton").dataset.translatedText = data.translated_text;
             })
             .catch(error => console.error('Error:', error));
         });
@@ -61,7 +70,7 @@
                 const ttsSource = document.getElementById("ttsSource");
                 // Add a cache-busting parameter to the TTS URL
                 ttsSource.src = data.tts_url + '?cb=' + new Date().getTime();
-                ttsAudio.style.display = 'block';
+                ttsAudio.style.display = "block";
                 ttsAudio.load();
                 ttsAudio.play();
             })
@@ -70,7 +79,7 @@
 
         document.getElementById("saveWordButton").addEventListener("click", function() {
             const englishText = document.getElementById("englishText").value;
-            const translatedText = document.getElementById("translationResult").innerText;
+            const translatedText = this.dataset.translatedText;
             if (translatedText) {
                 fetch('/saveword', {
                     method: 'POST',
@@ -83,6 +92,7 @@
                 .then(data => {
                     if (data.success) {
                         alert('Word saved successfully!');
+                        fetchSavedWords();
                     } else {
                         alert('Failed to save word.');
                     }
@@ -92,6 +102,30 @@
                 alert('Please translate the text first.');
             }
         });
+
+        function fetchSavedWords() {
+            fetch('/last_words', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const savedWordsList = document.getElementById("savedWordsList");
+                savedWordsList.innerHTML = "";
+                data.forEach(word => {
+                    const listItem = document.createElement("li");
+                    listItem.innerHTML = `<strong>English:</strong> ${word.english_text} <br><strong>Japanese:</strong> ${word.translated_text}`;
+                    listItem.classList.add("p-2", "border", "border-gray-300", "rounded-lg", "bg-white", "shadow-sm");
+                    savedWordsList.appendChild(listItem);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Initial fetch of saved words
+        fetchSavedWords();
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
 </body>

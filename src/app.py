@@ -17,6 +17,18 @@ mongodb_uri = os.getenv('MONGODB_URI')
 client = MongoClient(mongodb_uri)
 db = client.get_database()
 
+# Initialize the counter collection if it doesn't exist
+if db.counters.count_documents({'_id': 'translator_history_id'}, limit=1) == 0:
+    db.counters.insert_one({'_id': 'translator_history_id', 'sequence_value': 0})
+
+def get_next_sequence_value(sequence_name):
+    counter = db.counters.find_one_and_update(
+        {'_id': sequence_name},
+        {'$inc': {'sequence_value': 1}},
+        return_document=True
+    )
+    return counter['sequence_value']
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -38,12 +50,25 @@ def saveword():
     data = request.get_json()
     english_text = data.get('english_text')
     translated_text = data.get('translated_text')
-    
     if not english_text or not translated_text:
-        return jsonify({'error': 'Both English and translated text are required.'}), 400
+        return jsonify({'error': 'Text to save is missing.'}), 400
     
-    db.TranslatorHistory.insert_one({'english_text': english_text, 'translated_text': translated_text})
+    # Get the next sequence value for _id
+    next_id = get_next_sequence_value('translator_history_id')
+    db.TranslatorHistory.insert_one({'_id': next_id, 'english_text': english_text, 'translated_text': translated_text})
+    
+    # Ensure only the last 10 entries are kept
+    if db.TranslatorHistory.count_documents({}) > 10:
+        oldest_entry = db.TranslatorHistory.find().sort('_id', 1).limit(1)
+        db.TranslatorHistory.delete_one({'_id': oldest_entry[0]['_id']})
+    
     return jsonify({'success': True})
+
+@app.route('/last_words', methods=['GET'])
+def last_words():
+    words = list(db.TranslatorHistory.find().sort('_id', -1).limit(10))
+    return jsonify(words)
+
 
 @app.route('/tts', methods=['POST'])
 def tts():
