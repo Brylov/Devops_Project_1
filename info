@@ -19,20 +19,26 @@ app:
     adding mongodb to add save word function, 
     - added .env with the mongo creds (.gitignore config)
     - requiremenets.txt updated
+
+jenkins:
+    Plugins:
+        Docker pipline
+        aws ECR
+        
 EOD:
     github:
         made a faulty commit with senstive data (creds of mongo) and pushed it to github,
         fixed it by this steps:
-        adding the file/folder to .gitignore
-        ```
-        git add .gitignore
-        git commit -m "Add sensitive file to .gitignore 
-        git rm --cached path/to/sensitive/file #to untrack the sensetive file/folder
-        git commit -m "Remove sensitive file from tracking"
-        git push origin dev
-        git log # check what commit i need to delete
-        git rebase -i HEAD~N  #(Replace N with the number of commits to go back i.e if its the third commit so HEAD~3)
-        # deleting the commit line from the file and save
-        git rebase --continue
-        git push origin dev --force
-        ```
+            adding the file/folder to .gitignore
+            ```
+            git add .gitignore
+            git commit -m "Add sensitive file to .gitignore 
+            git rm --cached path/to/sensitive/file #to untrack the sensetive file/folder
+            git commit -m "Remove sensitive file from tracking"
+            git push origin dev
+            git log # check what commit i need to delete
+            git rebase -i HEAD~N  #(Replace N with the number of commits to go back i.e if its the third commit so HEAD~3)
+            # deleting the commit line from the file and save
+            git rebase --continue
+            git push origin dev --force
+            ```

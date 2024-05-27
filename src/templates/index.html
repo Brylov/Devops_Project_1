@@ -16,6 +16,7 @@
         <div class="box w-full md:w-1/2 p-4 bg-gray-200 border border-gray-300 rounded-lg shadow-md">
             <label for="translationResult" class="block mb-2 text-lg font-medium text-gray-700">Translated Text:</label>
             <div id="translationResult" class="translation p-2 border border-gray-300 rounded-lg h-32 bg-gray-50"></div>
+            <button type="button" id="saveWordButton" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Save Word</button>
             <button id="playTTS" class="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Play Audio</button>
             <audio id="ttsAudio" controls class="mt-4 w-full" style="display:none;">
                 <source id="ttsSource" src="" type="audio/mpeg">
@@ -37,6 +38,7 @@
             .then(response => response.json())
             .then(data => {
                 document.getElementById("translationResult").innerText = data.translated_text;
+                document.getElementById("saveWordButton").dataset.translatedText = data.translated_text;
                 // Reset audio player and hide it
                 document.getElementById("ttsSource").setAttribute("src", "");
                 document.getElementById("ttsAudio").style.display = "none";
@@ -59,10 +61,36 @@
                 const ttsSource = document.getElementById("ttsSource");
                 // Add a cache-busting parameter to the TTS URL
                 ttsSource.src = data.tts_url + '?cb=' + new Date().getTime();
+                ttsAudio.style.display = 'block';
                 ttsAudio.load();
                 ttsAudio.play();
             })
             .catch(error => console.error('Error:', error));
+        });
+
+        document.getElementById("saveWordButton").addEventListener("click", function() {
+            const englishText = document.getElementById("englishText").value;
+            const translatedText = document.getElementById("translationResult").innerText;
+            if (translatedText) {
+                fetch('/saveword', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ english_text: englishText, translated_text: translatedText })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Word saved successfully!');
+                    } else {
+                        alert('Failed to save word.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                alert('Please translate the text first.');
+            }
         });
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
