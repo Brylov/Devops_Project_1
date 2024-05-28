@@ -31,10 +31,6 @@ def get_next_sequence_value(sequence_name):
     )
     return counter['sequence_value']
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
 @app.route('/translate', methods=['POST'])
 def translate():
     data = request.get_json()
@@ -92,12 +88,19 @@ def tts():
 
     # return jsonify({'tts_url': response})
 
-    return jsonify({'tts_url': '/get_tts'})
+    return jsonify({'tts_filename': f'{tts_file}'})
 
-@app.route('/get_tts')
+@app.route('/get_tts', methods=['GET'])
 def get_tts():
-    return send_file('translated_text.mp3', mimetype='audio/mpeg')
+    tts_filename = request.args.get('filename')
+    if not tts_filename:
+        return jsonify({'error': 'Filename is missing.'}), 400
 
+    tts_file_path = os.path.join('.', tts_filename)
+    if not os.path.exists(tts_file_path):
+        return jsonify({'error': 'File not found.'}), 404
+    print(tts_filename)
+    return send_file(tts_filename, mimetype='audio/mpeg')
 
 
 if __name__ == '__main__':

@@ -13,6 +13,7 @@ import { TranslationService } from '../services/translation.service';
 export class MainComponent {
   inputText: string = '';
   translatedText: string = '';
+  audioUrl: string = '';
 
   constructor(private translationService: TranslationService) {}
 
@@ -20,13 +21,31 @@ export class MainComponent {
   translateText(): void {
     this.translationService.translateText(this.inputText).subscribe(
       (response) => {
-        console.log(this.inputText)
         this.translatedText = response.translated_text;
       },
       (error) => {
         console.error('Error:', error);
       }
     );
+  }
+
+  getTextToSpeech(text: string): void {
+    this.translationService.getTextToSpeech(text).subscribe(
+      (response) => {
+        // Add a cache-busting parameter to the audio URL
+        const cacheBuster = new Date().getTime();
+        this.audioUrl = `http://localhost:5000/get_tts?filename=${response.tts_filename}&cb=${cacheBuster}`;
+        this.playAudio(this.audioUrl);
+      },
+      (error) => {
+        console.error('Error:', error);
+      }
+    );
+  }
+
+  playAudio(url: string): void {
+    const audio = new Audio(url);
+    audio.play();
   }
   
 }

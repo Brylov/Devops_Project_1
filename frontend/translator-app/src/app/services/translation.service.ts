@@ -11,9 +11,11 @@ export class TranslationService {
   constructor(private http: HttpClient) {}
 
   translateText(text: string): Observable<any> {
-    this.response = this.http.post<any>(`${this.apiUrl}/translate`, { text });
-    console.log(this.response)
-    return this.response; 
+    return this.http.post<any>(`${this.apiUrl}/translate`, { text });
+  }
+
+  getTextToSpeech(text: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/tts`, { text });
   }
 
 }
