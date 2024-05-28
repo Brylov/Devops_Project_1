@@ -1,4 +1,4 @@
-import { Component, Injector } from '@angular/core';
+import { Component} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslationService } from '../services/translation.service';
 import { CommonModule } from '@angular/common';
@@ -16,6 +16,16 @@ export class MainComponent {
   translatedText: string = '';
   audioUrl: string = '';
   savedWords: any[] = [];
+  selectedInputLanguage: string = 'en';
+  selectedTargetLanguage: string = 'ja'; // Default language code for Japanese
+  languages: { name: string, code: string }[] = [
+    { name: 'English', code: 'en' },
+    { name: 'Japanese', code: 'ja' },
+    { name: 'Spanish', code: 'es' },
+    { name: 'French', code: 'fr' },
+    { name: 'German', code: 'de' },
+    // Add more languages as needed
+  ];
 
   constructor(private translationService: TranslationService) {}
 
@@ -25,14 +35,12 @@ export class MainComponent {
 
 
   translateText(): void {
-    // Check if the input text is empty
     if (!this.inputText.trim()) {
       this.translatedText = ''; // Clear the translated text if input is empty
       return; // Exit the method without making the API call
     }
-  
-    // Make the translation API call only if the input text is not empty
-    this.translationService.translateText(this.inputText).subscribe(
+
+    this.translationService.translateText(this.inputText, this.selectedInputLanguage, this.selectedTargetLanguage).subscribe(
       (response) => {
         this.translatedText = response.translated_text;
       },
@@ -51,7 +59,7 @@ export class MainComponent {
   }
 
   getTextToSpeech(text: string): void {
-    this.translationService.getTextToSpeech(text).subscribe(
+    this.translationService.getTextToSpeech(text, this.selectedInputLanguage, this.selectedTargetLanguage).subscribe(
       (response) => {
         // Add a cache-busting parameter to the audio URL
         const cacheBuster = new Date().getTime();
@@ -91,6 +99,12 @@ export class MainComponent {
         console.error('Error saving text:', error);
       }
     );
+  }
+  onSavedWordClick(word: any): void {
+    this.inputText = word.english_text;
+    this.translatedText = word.translated_text;
+    // Optionally, trigger the translation again if needed
+    this.translateText();
   }
   
 }

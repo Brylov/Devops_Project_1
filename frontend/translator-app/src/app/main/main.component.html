@@ -1,9 +1,12 @@
 <div class="bg-gray-200 min-h-screen flex  ">
+<!-- Sidebar for saved words -->
 <div class="w-1/6">
   <div class="bg-gray-200 rounded-lg p-4">
     <h2 class="text-lg font-medium text-gray-700">Saved Words</h2>
     <ul class="mt-2 space-y-2">
-      <li *ngFor="let word of savedWords" class="p-2 border border-gray-300 rounded-lg bg-white shadow-sm">
+      <li *ngFor="let word of savedWords" 
+          class="p-2 border border-gray-300 rounded-lg bg-white shadow-sm cursor-pointer hover:bg-gray-100"
+          (click)="onSavedWordClick(word)">
         <strong>English:</strong> {{ word.english_text }} <br>
         <strong>Japanese:</strong> {{ word.translated_text }}
       </li>
@@ -11,20 +14,27 @@
     </ul>
   </div>
 </div>
-  <!-- Sidebar for saved words -->
-  
+
   <!-- Main content -->
   <div class="bg-white min-h-screen max-w-screen-xl w-full shadow-lg p-7 md:p-20 flex justify-between">
     <!-- Left text area -->
     <div class="w-1/2 relative">
       <div class="bg-gray-200 rounded-lg p-4 relative">
+        <label for="languageSelect" class="block mt-4 mb-2 text-lg font-medium text-gray-700">Select Language:</label>
+        <select id="languageSelect" class="w-full p-2 border shadow-lg border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" [(ngModel)]="selectedInputLanguage">
+        <option *ngFor="let language of languages" [value]="language.code">{{ language.name }}</option>
+      </select>
         <label for="inputTextArea" class="block mb-2 text-lg font-medium text-gray-700">Enter Text to Translate:</label>
-        <textarea id="inputTextArea" name="inputTextArea" rows="8" class="w-full p-2 border shadow-lg border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" [(ngModel)]="inputText" (input)="translateText()" (ngModelChange)="clearTextAreas($event)"></textarea>
+        <textarea id="inputTextArea" name="inputTextArea" rows="8" class="w-full p-2 border shadow-lg border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" [(ngModel)]="inputText" (input)="translateText()" (ngModelChange)="clearTextAreas($event)"></textarea>     
       </div>
     </div>
     <!-- Right text area for translated text -->
     <div class="w-1/2 relative">
       <div class="bg-gray-200 rounded-lg p-4 relative">
+        <label for="languageSelect" class="block mt-4 mb-2 text-lg font-medium text-gray-700">Select Language:</label>
+        <select id="languageSelect" class="w-full p-2 border shadow-lg border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" [(ngModel)]="selectedTargetLanguage">
+        <option *ngFor="let language of languages" [value]="language.code">{{ language.name }}</option>
+      </select>
         <label for="outputTextArea" class="block mb-2 text-lg font-medium text-gray-700">Translated Text:</label>
         <textarea id="outputTextArea" name="outputTextArea" rows="8" class="w-full p-2 border shadow-lg border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" [(ngModel)]="translatedText" readonly></textarea>
         <button (click)="getTextToSpeech(translatedText)" class="absolute bottom-8 right-7 bg-blue-200 text-black p-2 rounded-full shadow-lg hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500" title="Speak">

@@ -34,26 +34,24 @@ def get_next_sequence_value(sequence_name):
 @app.route('/translate', methods=['POST'])
 def translate():
     data = request.get_json()
-    english_text = data.get('text')
-    if not english_text:
-        return jsonify({'error': 'Text to translate is missing.'}), 400
+    input_text = data.get('text')
+    input_lang = data.get('inputLang')
+    output_lang = data.get('outputLang')
     
-    translator = GoogleTranslator(source='en', target='ja')
-    translated_text = translator.translate(english_text)
+    translator = GoogleTranslator(source=input_lang, target=output_lang)
+    translated_text = translator.translate(input_text)
     
     return jsonify({'translated_text': translated_text})
 
 @app.route('/saveword', methods=['POST'])
 def saveword():
     data = request.get_json()
-    english_text = data.get('english_text')
+    input_text = data.get('english_text')
     translated_text = data.get('translated_text')
-    if not english_text or not translated_text:
-        return jsonify({'error': 'Text to save is missing.'}), 400
     
     # Get the next sequence value for _id
     next_id = get_next_sequence_value('translator_history_id')
-    db.TranslatorHistory.insert_one({'_id': next_id, 'english_text': english_text, 'translated_text': translated_text})
+    db.TranslatorHistory.insert_one({'_id': next_id, 'english_text': input_text, 'translated_text': translated_text})
     
     # Ensure only the last 10 entries are kept
     if db.TranslatorHistory.count_documents({}) > 10:
@@ -72,11 +70,12 @@ def last_words():
 def tts():
     data = request.get_json()
     translated_text = data.get('text')
+    output_lang = data.get('outputLang')
     if not translated_text:
         return jsonify({'error': 'Translated text is missing.'}), 400
 
     # Generate TTS for translated text
-    tts = gTTS(text=translated_text, lang='ja')
+    tts = gTTS(text=translated_text, lang=output_lang)
     tts_file = 'translated_text.mp3'
 
     if os.path.exists(tts_file):
@@ -85,8 +84,6 @@ def tts():
 
     # Serve TTS audio file
     response = send_file(tts_file, mimetype='audio/mpeg')
-
-    # return jsonify({'tts_url': response})
 
     return jsonify({'tts_filename': f'{tts_file}'})
 

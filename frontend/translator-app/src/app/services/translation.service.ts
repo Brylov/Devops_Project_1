@@ -10,12 +10,12 @@ export class TranslationService {
   response! : Observable<any> 
   constructor(private http: HttpClient) {}
 
-  translateText(text: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/translate`, { text });
+  translateText(text: string, inputLang: string, outputLang: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/translate`, { text, inputLang, outputLang });
   }
 
-  getTextToSpeech(text: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/tts`, { text });
+  getTextToSpeech(text: string, inputLang: string, outputLang: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/tts`, { text, inputLang, outputLang});
   }
   
   getLastWords(): Observable<any[]> {
