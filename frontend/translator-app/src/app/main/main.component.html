@@ -1,10 +1,25 @@
-<div class="bg-gray-200 min-h-screen flex items-center justify-center">
-  <div class="bg-white min-h-screen max-w-screen-xl w-full shadow-lg p-8 md:p-20 flex justify-between">
+<div class="bg-gray-200 min-h-screen flex  ">
+<div class="w-1/6">
+  <div class="bg-gray-200 rounded-lg p-4">
+    <h2 class="text-lg font-medium text-gray-700">Saved Words</h2>
+    <ul class="mt-2 space-y-2">
+      <li *ngFor="let word of savedWords" class="p-2 border border-gray-300 rounded-lg bg-white shadow-sm">
+        <strong>English:</strong> {{ word.english_text }} <br>
+        <strong>Japanese:</strong> {{ word.translated_text }}
+      </li>
+      <li *ngIf="savedWords.length === 0" class="text-gray-500">No saved words found.</li>
+    </ul>
+  </div>
+</div>
+  <!-- Sidebar for saved words -->
+  
+  <!-- Main content -->
+  <div class="bg-white min-h-screen max-w-screen-xl w-full shadow-lg p-7 md:p-20 flex justify-between">
     <!-- Left text area -->
     <div class="w-1/2 relative">
       <div class="bg-gray-200 rounded-lg p-4 relative">
         <label for="inputTextArea" class="block mb-2 text-lg font-medium text-gray-700">Enter Text to Translate:</label>
-        <textarea id="inputTextArea" name="inputTextArea" rows="8" class="w-full p-2 border shadow-lg border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" [(ngModel)]="inputText" (input)="translateText()"></textarea>
+        <textarea id="inputTextArea" name="inputTextArea" rows="8" class="w-full p-2 border shadow-lg border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" [(ngModel)]="inputText" (input)="translateText()" (ngModelChange)="clearTextAreas($event)"></textarea>
       </div>
     </div>
     <!-- Right text area for translated text -->
@@ -12,8 +27,11 @@
       <div class="bg-gray-200 rounded-lg p-4 relative">
         <label for="outputTextArea" class="block mb-2 text-lg font-medium text-gray-700">Translated Text:</label>
         <textarea id="outputTextArea" name="outputTextArea" rows="8" class="w-full p-2 border shadow-lg border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" [(ngModel)]="translatedText" readonly></textarea>
-        <button (click)="getTextToSpeech(translatedText)" class="absolute bottom-8 right-7 bg-blue-200 text-black p-2 rounded-full shadow-lg hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <button (click)="getTextToSpeech(translatedText)" class="absolute bottom-8 right-7 bg-blue-200 text-black p-2 rounded-full shadow-lg hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500" title="Speak">
           <i class="fas fa-volume-up"></i>
+        </button>
+        <button (click)="saveText(inputText, translatedText)" class="absolute bottom-8 right-20 bg-blue-200 text-black p-2 rounded-full shadow-lg hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 h-10 w-10" title="Save Text">
+          <i class="fas fa-save"></i>
         </button>
       </div>
     </div>
