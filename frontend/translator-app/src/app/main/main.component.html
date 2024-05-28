@@ -1,0 +1,18 @@
+<div class="bg-gray-200 min-h-screen flex items-center justify-center">
+    <div class="bg-white min-h-screen max-w-screen-xl w-full shadow-lg p-8 md:p-20 flex justify-between">
+      <!-- Left text area -->
+      <div class="w-1/2">
+        <div class="bg-gray-200 rounded-lg p-4">
+          <label for="inputTextArea" class="block mb-2 text-lg font-medium text-gray-700">Enter Text to Translate:</label>
+          <textarea id="inputTextArea" name="inputTextArea" rows="8" class="w-full p-2 border shadow-lg border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" [(ngModel)]="inputText" (input)="translateText()"></textarea>
+        </div>
+      </div>
+      <!-- Right text area for translated text -->
+      <div class="w-1/2">
+        <div class="bg-gray-200 rounded-lg p-4">
+          <label for="outputTextArea" class="block mb-2 text-lg font-medium text-gray-700">Translated Text:</label>
+          <textarea id="outputTextArea" name="outputTextArea" rows="8" class="w-full p-2 border shadow-lg border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" [(ngModel)]="translatedText" readonly></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
