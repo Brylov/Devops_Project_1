@@ -46,7 +46,7 @@ pipeline {
             steps {
                 script {                 
                     // Run pytest inside the Docker container
-                    sh 'docker exec translator_jenkins_test pytest'
+                    sh 'docker exec backend_jenkins_test pytest -s -v test_app.py'
                 }
             }
         }
