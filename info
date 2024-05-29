@@ -83,4 +83,8 @@ docker:
       so I had to make some modifications on angular.json, the ng build -- built the app into browser folder,
       had to change the build architecture from Application --> Browser, and the "browser":"src/main.ts" to "main":"src/main.ts",
       after this change the build finished successfully with the dist folder i know how to work with.
-      
+
+jenkins:
+    adding the deploy image to ECR, on non portfolio purpuses, i have to run the jenkins of EC2 and give IAM role to the machine to connect to ECR,
+    but on PORTFOLIO -- ill connect with my aws account to the awscli of the jenkins machine instead, the jenkins is running locally (badget considorations)
+

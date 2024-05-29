@@ -6,8 +6,7 @@ pipeline {
             steps {
                 // Build Docker image
                 script {
-                    docker.build('translator-test')
-                    //sh "docker run --rm --name portfolio-translator --network jenkins_nw -d translator-test"
+                    sh 'docker-compose -f docker-compose.yaml up -d --build --remove-orphans --force-recreate --network jenkins_nw'
                 }
             }
 
@@ -15,16 +14,14 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    docker.image('translator-test').run("--rm --name translator_jenkins_test --network jenkins_nw")                  
-                    // Run pytest inside the Docker container
-                    sh 'docker exec translator_jenkins_test pytest'
+                    sh 'docker ps'
                 }
             }
             post {
                 always {
                     // Remove Docker container after test stage
                     script {
-                        sh 'docker stop translator_jenkins_test'
+                        sh 'docker compose down'
                     }
                 }
             }
