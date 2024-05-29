@@ -182,6 +182,7 @@ yarn-error.log
 .idea/
 .project
 .classpath
+.editorconfig
 .c9/
 *.launch
 .settings/
@@ -203,6 +204,7 @@ yarn-error.log
 /libpeerconnection.log
 testem.log
 /typings
+.angular/
 
 # System files
 .DS_Store
