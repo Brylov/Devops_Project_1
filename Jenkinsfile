@@ -91,14 +91,13 @@ pipeline {
         }
     }
 }
-def waitForMongoDB(container) {
+def waitForMongoDB() {
     def maxRetries = 30
     def retryInterval = 10 // seconds
 
     for (int i = 0; i < maxRetries; i++) {
-        def exitCode = container.inside {
-            sh(returnStatus: true, script: "mongo --eval 'db.adminCommand(\"ping\")'")
-        }
+        def exitCode = sh(returnStatus: true, script: "docker exec -it mongodb_jenkins_test mongo --eval 'db.adminCommand(\"ping\")'")
+
         if (exitCode == 0) {
             echo "MongoDB is ready!"
             return
