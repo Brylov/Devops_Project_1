@@ -31,7 +31,6 @@ pipeline {
             steps {
                 // Build Docker image
                 script {
-                    sh 'docker network create internal_tests'
                     def mongoContainer = docker.image('mongodb-test').run("--rm --name mongodb_jenkins_test --network internal_tests -p 27017:27017 --env-file .env")
                     waitForMongoDB()
                     docker.image('backend-test').run("--rm --name backend_jenkins_test -p 5000:5000  --network internal_tests --env-file .env")
@@ -64,8 +63,8 @@ pipeline {
                     // Remove Docker container after test stage
                     script {
                         sh 'docker stop mongodb_jenkins_test'
-                        sh 'docker stop backend_jenkins_test'
                         sh 'docker stop frontend_jenkins_test'
+                        sh 'docker stop backend_jenkins_test'
                     }
                 }
             }
@@ -83,10 +82,8 @@ pipeline {
             cleanWs()
             script{
                 sh 'docker stop mongodb_jenkins_test'
-                sh 'docker stop backend_jenkins_test'
                 sh 'docker stop frontend_jenkins_test'
-                sh 'docker network rm internal_tests'
-
+                sh 'docker stop backend_jenkins_test'
             }
         }
     }
