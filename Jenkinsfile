@@ -32,11 +32,11 @@ pipeline {
                 // Build Docker image
                 script {
                     sh 'docker network create internal_tests'
-                    docker.image('backend-test').run("--rm --name backend_jenkins_test -p 5000:5000  --network internal_tests --env-file .env")
+                    docker.image('mongodb-test').run("--rm --name mongodb_jenkins_test --network internal_tests -p 27017:27017 --env-file .env")
+                    docker.image('backend-test').run("--rm --name backend_jenkins_test -p 5000:5000  --network internal_tests --env-file .env --link mongodb_jenkins_test:mongodb")
                     docker.image('frontend-test').run("--rm --name frontend_jenkins_test -p 80:80 --network ${DOCKER_NETWORK} --network internal_tests")
                     // Load environment variables from .env file
                     // Run MongoDB container with environment variables              
-                    docker.image('mongodb-test').run("--rm --name mongodb_jenkins_test --network internal_tests -p 27017:27017 --env-file .env")
                     //sh "docker run --rm --name portfolio-translator --network jenkins_nw -d translator-test"
 
                 }
@@ -80,6 +80,13 @@ pipeline {
     post { 
         always { 
             cleanWs()
+            script{
+                sh 'docker network rm internal_tests'
+                sh 'docker stop mongodb_jenkins_test'
+                sh 'docker stop backend_jenkins_test'
+                sh 'docker stop frontend_jenkins_test'
+
+            }
         }
     }
 }
