@@ -10,8 +10,8 @@ pipeline {
         stage('Decrypt Files') {
             steps {
                 script {
-                    sh 'openssl enc -aes-256-cbc -d -in .env.enc -out .env -k $DECRYPTION_KEY'
-                    sh 'openssl enc -aes-256-cbc -d -in init-script.sh.enc -out initdb.d/init-script.sh -k $DECRYPTION_KEY'
+                    sh "openssl enc -aes-256-cbc -d -in .env.enc -out .env -k $DECRYPTION_KEY"
+                    sh "openssl enc -aes-256-cbc -d -in init-mongo.js.enc -out initdb.d/init-mongo.js -k $DECRYPTION_KEY"
                 }
             }
         }
