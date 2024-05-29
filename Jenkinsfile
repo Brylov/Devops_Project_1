@@ -31,9 +31,10 @@ pipeline {
             steps {
                 // Build Docker image
                 script {
+                    sh 'cat .env'
                     def mongoContainer = docker.image('mongodb-test').run("--rm --name mongodb_jenkins_test --network internal_tests -p 27017:27017 --env-file .env")
                     waitForMongoDB()
-                    docker.image('backend-test').run("--rm --name backend_jenkins_test -p 5000:5000  --network internal_tests --env-file .env")
+                    docker.image('backend-test').run("--rm --name backend_jenkins_test -p 5000:5000  --network internal_tests --env-file .env ")
                     docker.image('frontend-test').run("--rm --name frontend_jenkins_test -p 80:80 --network ${DOCKER_NETWORK} --network internal_tests")
                     // Load environment variables from .env file
                     // Run MongoDB container with environment variables              
@@ -90,7 +91,7 @@ pipeline {
 }
 def waitForMongoDB() {
     def maxRetries = 30
-    def retryInterval = 10 // seconds
+    def retryInterval = 2 // seconds
 
     for (int i = 0; i < maxRetries; i++) {
         def exitCode = sh(returnStatus: true, script: "docker exec mongodb_jenkins_test mongosh --eval 'db.adminCommand({ ping: 1 })'")
