@@ -32,8 +32,9 @@ pipeline {
                 // Build Docker image
                 script {
                     sh 'docker network create internal_tests'
-                    docker.image('mongodb-test').run("--rm --name mongodb_jenkins_test --network internal_tests -p 27017:27017 --env-file .env")
-                    docker.image('backend-test').run("--name backend_jenkins_test -p 5000:5000  --network internal_tests --env-file .env --link mongodb_jenkins_test:mongodb")
+                    def mongoContainer = docker.image('mongodb-test').run("--rm --name mongodb_jenkins_test --network internal_tests -p 27017:27017 --env-file .env")
+                    waitForMongoDB(mongoContainer)
+                    docker.image('backend-test').run("--name backend_jenkins_test -p 5000:5000  --network internal_tests --env-file .env")
                     docker.image('frontend-test').run("--rm --name frontend_jenkins_test -p 80:80 --network ${DOCKER_NETWORK} --network internal_tests")
                     // Load environment variables from .env file
                     // Run MongoDB container with environment variables              
@@ -89,4 +90,23 @@ pipeline {
             }
         }
     }
+}
+def waitForMongoDB(container) {
+    def maxRetries = 30
+    def retryInterval = 10 // seconds
+
+    for (int i = 0; i < maxRetries; i++) {
+        def exitCode = container.inside {
+            sh(returnStatus: true, script: "mongo --eval 'db.adminCommand(\"ping\")'")
+        }
+        if (exitCode == 0) {
+            echo "MongoDB is ready!"
+            return
+        } else {
+            echo "MongoDB is not yet ready. Retrying in ${retryInterval} seconds..."
+            sleep(retryInterval)
+        }
+    }
+
+    error("Failed to start MongoDB container or MongoDB is not ready after ${maxRetries} retries.")
 }
