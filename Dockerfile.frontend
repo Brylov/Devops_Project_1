@@ -6,7 +6,9 @@ COPY ./frontend/translator-app/package*.json ./
 
 RUN npm install -g @angular/cli
 
-RUN npm install
+RUN npm init
+
+RUN npm install --silent
 
 COPY ./frontend/translator-app .
 
