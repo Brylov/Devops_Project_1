@@ -8,10 +8,10 @@ pipeline {
     stages {
         stage('Decrypt Files') {
             steps {
-                withCredentials([string(credentialsId: 'Ciphertext', variable: 'DECRYPTION_KEY')]) {
+                withCredentials([string(credentialsId: 'decryption-key', variable: 'DECRYPTION_KEY')]) {
                     script {
-                        sh 'openssl enc -aes-256-cbc -d -in .env.enc -out .env -k \"$DECRYPTION_KEY\" -pbkdf2'
-                        sh 'openssl enc -aes-256-cbc -d -in init-mongo.js.enc -out initdb.d/init-mongo.js -k \"$DECRYPTION_KEY\" -pbkdf2'
+                        sh "openssl enc -aes-256-cbc -d -in .env.enc -out .env -k '$DECRYPTION_KEY'"
+                        sh "openssl enc -aes-256-cbc -d -in initdb.d/init-mongo.js.enc -out initdb.d/init-mongo.js -k '$DECRYPTION_KEY'"
                     }
                 }
             }
@@ -31,7 +31,6 @@ pipeline {
             steps {
                 // Build Docker image
                 script {
-                    def envVars = readEnvFile('.env')
                     sh 'docker network create internal_tests'
                     docker.image('backend-test').run("--rm --name backend_jenkins_test -p 5000:5000  --network internal_tests --env-file .env")
                     docker.image('frontend-test').run("--rm --name frontend_jenkins_test -p 80:80 --network ${DOCKER_NETWORK} --network internal_tests")
