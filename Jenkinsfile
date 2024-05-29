@@ -93,7 +93,7 @@ def waitForMongoDB() {
     def retryInterval = 10 // seconds
 
     for (int i = 0; i < maxRetries; i++) {
-        def exitCode = sh(returnStatus: true, script: "docker exec -it mongodb_jenkins_test mongo --eval 'db.adminCommand(\"ping\")'")
+        def exitCode = sh(returnStatus: true, script: "docker exec mongodb_jenkins_test mongosh --eval 'db.adminCommand({ ping: 1 })'")
 
         if (exitCode == 0) {
             echo "MongoDB is ready!"
