@@ -1,0 +1,21 @@
+FROM node:22-alpine AS builder
+
+WORKDIR /usr/src/app
+
+COPY ./frontend/translator-app/package*.json ./
+
+RUN npm install -g @angular/cli
+
+RUN npm install --silent
+
+COPY ./frontend/translator-app .
+
+RUN ng build --configuration production
+
+FROM nginx:alpine
+
+COPY --from=builder /usr/src/app/dist/translator-app/ /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD [ "nginx", "-g", "daemon off;" ]

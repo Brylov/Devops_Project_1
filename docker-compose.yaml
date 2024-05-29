@@ -1,5 +1,5 @@
 services:
-  web:
+  backend:
     build: .
     ports:
       - "5000:5000"
@@ -23,6 +23,12 @@ services:
     volumes:
       - ./initdb.d:/docker-entrypoint-initdb.d
 
-      
-
-
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.front
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    

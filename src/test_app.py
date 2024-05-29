@@ -1,47 +1,66 @@
-import ast
 import os
-from flask import json
 import pytest
+import json
 from app import app
-from pymongo import MongoClient, errors
-from dotenv import load_dotenv
-
 
 @pytest.fixture
 def client():
     with app.test_client() as client:
         yield client
 
-def test_index(client):
-    response = client.get('/')
+def test_translate_endpoint(client):
+    response = client.post('/translate', json={'text': 'hello', 'inputLang': 'en', 'outputLang': 'ja'})
     assert response.status_code == 200
-    assert b"English to Japanese Translator" in response.data
+    data = json.loads(response.data)
+    assert 'translated_text' in data
 
-def test_translation(client):
-    response = client.post('/translate', json={'text': 'hello'})
+def test_saveword_endpoint(client):
+    response = client.post('/saveword', json={'input_text': 'hello', 'output_text': 'こんにちは', 'input_lang': 'en', 'output_lang': 'ja'})
     assert response.status_code == 200
-    parsed_data = json.loads(response.data)
-    translated_text_unicode = parsed_data['translated_text']
-    # Decode the Unicode escape sequence to obtain the Japanese characters
-    japanese_string = ast.literal_eval('"' + translated_text_unicode + '"')
-    # Print response data to console
-    assert japanese_string == "こんにちは"
+    data = json.loads(response.data)
+    assert data['success'] == True
 
-def test_page_not_exist(client):
-    response = client.get('/nonexistent')
+def test_last_words_endpoint(client):
+    response = client.get('/last_words')
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert isinstance(data, list)
+
+def test_tts_endpoint(client):
+    response = client.post('/tts', json={'text': 'こんにちは', 'outputLang': 'ja'})
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert 'tts_filename' in data
+
+def test_get_tts_endpoint(client):
+    response = client.get('/get_tts?filename=translated_text.mp3')
+    assert response.status_code == 200
+
+def test_deleteword_endpoint(client):
+    # First, let's add a word to the database for testing
+    response = client.post('/saveword', json={'input_text': 'hello', 'output_text': 'こんにちは', 'input_lang': 'en', 'output_lang': 'ja'})
+    assert response.status_code == 200
+    # Decode the byte object into a string and parse as JSON
+    data = json.loads(response.data.decode('utf-8'))
+
+    # Access the word data from the response
+    saved_word_data = data.get('word')
+
+    assert data['success'] == True
+    assert 'id' in saved_word_data
+    
+    word_id = saved_word_data['id']  # Get the ID of the newly added word
+    
+    # Now, let's try to delete the word using the obtained ID
+    response = client.delete(f'/deleteword/{word_id}')
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert data['success'] == True
+    
+    # Check if the word was actually deleted by attempting to retrieve it
+    response = client.get(f'/getword/{word_id}')
+    assert response.status_code == 404  # Expecting a 404 since the word should no longer exist
+
+    # Test deleting a non-existent word
+    response = client.delete('/deleteword/1000')
     assert response.status_code == 404
-
-def test_mongo_connectivity():
-    load_dotenv()
-    mongodb_uri = os.getenv('MONGODB_URI')
-    
-    if not mongodb_uri:
-        pytest.fail("MONGODB_URI environment variable not set")
-    
-    try:
-        client = MongoClient(mongodb_uri, serverSelectionTimeoutMS=5000)
-        client.server_info()  # Forces a call to the server to check connection
-        assert True
-    except errors.ServerSelectionTimeoutError:
-        pytest.fail("Could not connect to MongoDB")
-

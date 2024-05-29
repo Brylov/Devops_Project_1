@@ -51,9 +51,10 @@ def saveword():
     input_lang = data.get('input_lang')
     output_lang = data.get('output_lang')
 
-    
     # Get the next sequence value for _id
     next_id = get_next_sequence_value('translator_history_id')
+    
+    # Insert the word into the database
     db.TranslatorHistory.insert_one({'_id': next_id, 'input_text': input_text, 'output_text': output_text, 'input_lang': input_lang, 'output_lang': output_lang })
     
     # Ensure only the last 10 entries are kept
@@ -61,12 +62,43 @@ def saveword():
         oldest_entry = db.TranslatorHistory.find().sort('_id', 1).limit(1)
         db.TranslatorHistory.delete_one({'_id': oldest_entry[0]['_id']})
     
-    return jsonify({'success': True})
+    # Return the saved word data in the response
+    saved_word = {
+        'id': next_id,
+        'input_text': input_text,
+        'output_text': output_text,
+        'input_lang': input_lang,
+        'output_lang': output_lang
+    }
+    
+    return jsonify({'success': True, 'word': saved_word})
 
 @app.route('/last_words', methods=['GET'])
 def last_words():
     words = list(db.TranslatorHistory.find().sort('_id', -1).limit(10))
     return jsonify(words)
+
+app.route('/getword/<word_id>', methods=['GET'])
+def get_word(word_id):
+    try:
+        # Convert word_id to integer
+        word_id = int(word_id)
+        
+        # Query the database for the word with the given ID
+        word = db.TranslatorHistory.find_one({'_id': word_id})
+        
+        if word:
+            # If the word exists, return it as JSON response
+            return jsonify({'success': True, 'word': word}), 200
+        else:
+            # If word not found, return error response
+            return jsonify({'success': False, 'error': 'Word not found.'}), 404
+    except ValueError:
+        # If word ID format is invalid, return error response
+        return jsonify({'success': False, 'error': 'Invalid word ID format.'}), 400
+    except Exception as e:
+        # If any other error occurs, return error response
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
 @app.route('/tts', methods=['POST'])
