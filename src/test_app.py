@@ -22,7 +22,7 @@ def test_last_words_endpoint(client):
     assert isinstance(data, list)
 
 def test_tts_endpoint(client):
-    response = client.post('/tts', json={'text': 'こんにちは', 'outputLang': 'ja'})
+    response = client.post('/tts', json={'text': 'こんにちは', 'lang': 'ja'})
     assert response.status_code == 200
     data = json.loads(response.data)
     assert 'tts_filename' in data
