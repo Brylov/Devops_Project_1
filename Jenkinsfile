@@ -1,27 +1,61 @@
 pipeline {
     agent any
+
+    environment {
+        DOCKER_NETWORK = 'jenkins_nw'
+    }
     
     stages {
-        stage('Build && Run') {
+        stage('Build Images') {
             steps {
                 // Build Docker image
                 script {
-                    sh 'docker compose -f docker-compose.yaml up -d --build --remove-orphans --force-recreate --network jenkins_nw'
+                    docker.build('backend-test', '-f Dockerfile.backend .')
+                    docker.build('frontend-test', '-f Dockerfile.frontend .')
+                    docker.build('mongodb-test', '-f Dockerfile.mongodb .')
+                    //sh "docker run --rm --name portfolio-translator --network jenkins_nw -d translator-test"
                 }
             }
-
         }
-        stage('Test') {
+        stage('Run Images') {
             steps {
+                // Build Docker image
                 script {
-                    sh 'docker ps'
+                    def envVars = readEnvFile('.env')
+                    sh 'docker network create internal_tests'
+                    docker.image('backend-test').run("--rm --name backend_jenkins_test -p 5000:5000  --network internal_tests --env-file .env")
+                    docker.image('frontend-test').run("--rm --name frontend_jenkins_test -p 80:80 --network ${DOCKER_NETWORK} --network internal_tests")
+                    // Load environment variables from .env file
+                    // Run MongoDB container with environment variables              
+                    docker.image('mongodb-test').run("--rm --name mongodb_jenkins_test --network internal_tests -p 27017:27017 --env-file .env")
+                    //sh "docker run --rm --name portfolio-translator --network jenkins_nw -d translator-test"
+
+                }
+            }
+        }
+        stage('unit Tests') {
+            steps {
+                script {                 
+                    // Run pytest inside the Docker container
+                    sh 'docker exec translator_jenkins_test pytest'
+                }
+            }
+        }
+
+        stage('E2E Tests') {
+            steps {
+                script {                 
+                    // Run pytest inside the Docker container
+                    sh 'docker exec translator_jenkins_test pytest'
                 }
             }
             post {
                 always {
                     // Remove Docker container after test stage
                     script {
-                        sh 'docker compose down'
+                        sh 'docker stop mongodb_jenkins_test'
+                        sh 'docker stop backend_jenkins_test'
+                        sh 'docker stop frontend_jenkins_test'
                     }
                 }
             }

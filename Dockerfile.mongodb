@@ -1,0 +1,8 @@
+# Use the official MongoDB image as a base
+FROM mongo:latest
+
+# Copy the initialization scripts
+COPY ./initdb.d /docker-entrypoint-initdb.d
+
+# Expose MongoDB port
+EXPOSE 27017
