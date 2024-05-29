@@ -81,6 +81,8 @@ pipeline {
     post { 
         always { 
             cleanWs()
+        }
+        failure{
             script{
                 sh 'docker stop mongodb_jenkins_test'
                 sh 'docker stop frontend_jenkins_test'
