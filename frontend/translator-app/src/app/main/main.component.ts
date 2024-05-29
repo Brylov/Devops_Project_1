@@ -109,8 +109,8 @@ export class MainComponent {
   onSavedWordClick(word: any): void {
     this.inputText = word.input_text;
     this.outputText = word.output_text;
-    console.log(word.input_lang)
     this.selectedInputLanguage = this.getLanguageCode(word.input_lang);
+    console.log(this.selectedInputLanguage)
     this.selectedOutputLanguage = this.getLanguageCode(word.output_lang);
     // Optionally, trigger the translation again if needed
     this.translateText();

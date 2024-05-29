@@ -14,11 +14,6 @@ def test_translate_endpoint(client):
     data = json.loads(response.data)
     assert 'translated_text' in data
 
-def test_saveword_endpoint(client):
-    response = client.post('/saveword', json={'input_text': 'hello', 'output_text': 'こんにちは', 'input_lang': 'en', 'output_lang': 'ja'})
-    assert response.status_code == 200
-    data = json.loads(response.data)
-    assert data['success'] == True
 
 def test_last_words_endpoint(client):
     response = client.get('/last_words')
@@ -36,9 +31,9 @@ def test_get_tts_endpoint(client):
     response = client.get('/get_tts?filename=translated_text.mp3')
     assert response.status_code == 200
 
-def test_deleteword_endpoint(client):
+def test_saveword_and_deleteword_endpoint(client):
     # First, let's add a word to the database for testing
-    response = client.post('/saveword', json={'input_text': 'hello', 'output_text': 'こんにちは', 'input_lang': 'en', 'output_lang': 'ja'})
+    response = client.post('/saveword', json={'input_text': 'hello', 'output_text': 'こんにちは', 'input_lang': 'English', 'output_lang': 'Japanese'})
     assert response.status_code == 200
     # Decode the byte object into a string and parse as JSON
     data = json.loads(response.data.decode('utf-8'))
