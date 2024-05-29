@@ -46,12 +46,15 @@ def translate():
 @app.route('/saveword', methods=['POST'])
 def saveword():
     data = request.get_json()
-    input_text = data.get('english_text')
-    translated_text = data.get('translated_text')
+    input_text = data.get('input_text')
+    output_text = data.get('output_text')
+    input_lang = data.get('input_lang')
+    output_lang = data.get('output_lang')
+
     
     # Get the next sequence value for _id
     next_id = get_next_sequence_value('translator_history_id')
-    db.TranslatorHistory.insert_one({'_id': next_id, 'english_text': input_text, 'translated_text': translated_text})
+    db.TranslatorHistory.insert_one({'_id': next_id, 'input_text': input_text, 'output_text': output_text, 'input_lang': input_lang, 'output_lang': output_lang })
     
     # Ensure only the last 10 entries are kept
     if db.TranslatorHistory.count_documents({}) > 10:

@@ -22,8 +22,8 @@ export class TranslationService {
     return this.http.get<any[]>(`${this.apiUrl}/last_words`);
   }
 
-  saveWord(englishText: string, translatedText: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/saveword`, { english_text: englishText, translated_text: translatedText });
+  saveWord(inputText: string, outputText: string, inputLang: string, outputLang: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/saveword`, { input_text: inputText, output_text: outputText, input_lang: inputLang, output_lang: outputLang});
   }
 
 }
