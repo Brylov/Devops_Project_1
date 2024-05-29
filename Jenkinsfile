@@ -10,8 +10,8 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'Ciphertext', variable: 'DECRYPTION_KEY')]) {
                     script {
-                        sh "openssl enc -aes-256-cbc -d -in .env.enc -out .env -k \"$DECRYPTION_KEY\""
-                        sh "openssl enc -aes-256-cbc -d -in init-mongo.js.enc -out initdb.d/init-mongo.js -k \"$DECRYPTION_KEY\""
+                        sh 'openssl enc -aes-256-cbc -d -in .env.enc -out .env -k \"$DECRYPTION_KEY\" -pbkdf2'
+                        sh 'openssl enc -aes-256-cbc -d -in init-mongo.js.enc -out initdb.d/init-mongo.js -k \"$DECRYPTION_KEY\" -pbkdf2'
                     }
                 }
             }
