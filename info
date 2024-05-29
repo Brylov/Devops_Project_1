@@ -58,5 +58,34 @@ angular:
     decided for the challenge to use angular like the new approch that the creators are reccomend to use so I started to use as standalone components on angular.
     quite challenging to not use ngModule but I figured it out, for the long run it seems like its easier to maintain.
 
+DAY 3:
+
+backend:   
+    added more apis and modified the exists, naming variables more realistic. added full pytest file for testing all the apis + connection with mongo.
+
+frontend:
+    made a lot of changes, refactor names, functinality to all apis. added copy function and input text tts, delete saved words, select multi languages for input and output,
+    production build availbale for next stage --> devops ci/cd jenkins + argocd, minikube;
+    production running on nginx! for more security, faster runtime, light weight images.
+
+nginx:
+    serving the frontend via port 80 (atm), nginx.conf created and modified.
+
+docker:
+    docker compose now have 3 services, frontend, backend, mongo.
+    while tring to setup multistage dockerfile for the frontend i had some issues:
+    * collision between pulled image of node to the angular that the app is running --> fixed by update to later image of node (from 14-alpine to 22-alpine),
+    *  ng build --prod is not supported since angular 12 , had to use ng build --configuration production.
+    * after building the front image i got the default html of nginx instead the app, apperently the build arcitecture i diffrent from what i used to use so i   had to make some modifications on angular.json, the ng build -- built the app into browser folder, had to change the build architecture from Application --> Browser, and the "browser":"src/main.ts" to "main":"src/main.ts", after this change the build finished successfully with the dist folder i know how to work with.
+
+
+
+
+
+
+
+
+
+
 
 

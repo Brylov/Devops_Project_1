@@ -14,8 +14,8 @@ export class TranslationService {
     return this.http.post<any>(`${this.apiUrl}/translate`, { text, inputLang, outputLang });
   }
 
-  getTextToSpeech(text: string, inputLang: string, outputLang: string): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/tts`, { text, inputLang, outputLang});
+  getTextToSpeech(text: string, lang: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/tts`, { text, lang});
   }
   
   getLastWords(): Observable<any[]> {

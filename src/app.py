@@ -104,13 +104,13 @@ def get_word(word_id):
 @app.route('/tts', methods=['POST'])
 def tts():
     data = request.get_json()
-    translated_text = data.get('text')
-    output_lang = data.get('outputLang')
-    if not translated_text:
+    text = data.get('text')
+    lang = data.get('lang')
+    if not text:
         return jsonify({'error': 'Translated text is missing.'}), 400
 
     # Generate TTS for translated text
-    tts = gTTS(text=translated_text, lang=output_lang)
+    tts = gTTS(text=text, lang=lang)
     tts_file = 'translated_text.mp3'
 
     if os.path.exists(tts_file):

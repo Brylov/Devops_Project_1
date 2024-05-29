@@ -28,6 +28,9 @@
         </select>
         <label for="inputTextArea" class="block mb-2 text-lg font-medium text-gray-700">Enter Text to Translate:</label>
         <textarea id="inputTextArea" name="inputTextArea" rows="8" class="w-full p-2 border shadow-lg border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" [(ngModel)]="inputText" (input)="translateText()" (ngModelChange)="clearTextAreas($event)"></textarea>     
+        <button (click)="getTextToSpeech(inputText, selectedInputLanguage)" class="absolute bottom-8 right-7 bg-blue-200 text-black p-2 rounded-full shadow-lg hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500" title="Speak">
+          <i class="fas fa-volume-up"></i>
+        </button>
       </div>
     </div>
     <!-- Right text area for translated text -->
@@ -40,7 +43,7 @@
         <label for="outputTextArea" class="block mb-2 text-lg font-medium text-gray-700">Translated Text:</label>
         <textarea id="outputTextArea" name="outputTextArea" rows="8" class="w-full p-2 border shadow-lg border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" [(ngModel)]="outputText" readonly></textarea>
         <div *ngIf="copySuccess" class="absolute bottom-16 left-7 text-green-500">Text copied to clipboard</div>
-        <button (click)="getTextToSpeech(outputText)" class="absolute bottom-8 right-7 bg-blue-200 text-black p-2 rounded-full shadow-lg hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500" title="Speak">
+        <button (click)="getTextToSpeech(outputText, selectedOutputLanguage)" class="absolute bottom-8 right-7 bg-blue-200 text-black p-2 rounded-full shadow-lg hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500" title="Speak">
           <i class="fas fa-volume-up"></i>
         </button>
         <button (click)="saveText(inputText, outputText, getLanguageName(selectedInputLanguage), getLanguageName(selectedOutputLanguage))" class="absolute bottom-8 right-20 bg-blue-200 text-black p-2 rounded-full shadow-lg hover:bg-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500 h-10 w-10" title="Save Text">

@@ -63,8 +63,8 @@ export class MainComponent {
     }
   }
 
-  getTextToSpeech(text: string): void {
-    this.translationService.getTextToSpeech(text, this.selectedInputLanguage, this.selectedOutputLanguage).subscribe(
+  getTextToSpeech(text: string, lang: string): void {
+    this.translationService.getTextToSpeech(text, lang).subscribe(
       (response) => {
         // Add a cache-busting parameter to the audio URL
         const cacheBuster = new Date().getTime();
