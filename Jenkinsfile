@@ -3,7 +3,6 @@ pipeline {
 
     environment {
         DOCKER_NETWORK = 'jenkins_nw'
-        DECRYPTION_KEY = credentials('Ciphertext')
     }
     
     stages {
