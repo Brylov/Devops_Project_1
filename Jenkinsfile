@@ -6,7 +6,7 @@ pipeline {
             steps {
                 // Build Docker image
                 script {
-                    sh 'docker-compose -f docker-compose.yaml up -d --build --remove-orphans --force-recreate --network jenkins_nw'
+                    sh 'docker compose -f docker-compose.yaml up -d --build --remove-orphans --force-recreate --network jenkins_nw'
                 }
             }
 
