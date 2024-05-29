@@ -3,9 +3,18 @@ pipeline {
 
     environment {
         DOCKER_NETWORK = 'jenkins_nw'
+        DECRYPTION_KEY = credentials('Ciphertext')
     }
     
     stages {
+        stage('Decrypt Files') {
+            steps {
+                script {
+                    sh 'openssl enc -aes-256-cbc -d -in .env.enc -out .env -k $DECRYPTION_KEY'
+                    sh 'openssl enc -aes-256-cbc -d -in init-script.sh.enc -out initdb.d/init-script.sh -k $DECRYPTION_KEY'
+                }
+            }
+        }
         stage('Build Images') {
             steps {
                 // Build Docker image

@@ -162,7 +162,7 @@ cython_debug/
 #Others
 dicpy/
 node_modules/
-initdb.d/
+initdb.d/init-mongo.js
 *.mp3
 .vscode
 
