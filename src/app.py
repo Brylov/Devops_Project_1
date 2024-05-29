@@ -102,6 +102,24 @@ def get_tts():
     print(tts_filename)
     return send_file(tts_filename, mimetype='audio/mpeg')
 
+@app.route('/deleteword/<word_id>', methods=['DELETE'])
+def deleteword(word_id):
+    try:
+        # Convert word_id to integer
+        word_id = int(word_id)
+        
+        # Check if the word exists in the database
+        word = db.TranslatorHistory.find_one({'_id': word_id})
+        if word:
+            # Delete the word from the database
+            db.TranslatorHistory.delete_one({'_id': word_id})
+            return jsonify({'success': True, 'message': 'Word deleted successfully.'}), 200
+        else:
+            return jsonify({'success': False, 'error': 'Word not found.'}), 404
+    except ValueError:
+        return jsonify({'success': False, 'error': 'Invalid word ID format.'}), 400
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -5,10 +5,12 @@
       <h2 class="text-lg font-medium text-gray-700">Saved Words</h2>
       <ul class="mt-2 space-y-2">
         <li *ngFor="let word of savedWords" 
-            class="p-2 border border-gray-300 rounded-lg bg-white shadow-sm cursor-pointer hover:bg-gray-100"
-            (click)="onSavedWordClick(word)">
+            class="p-2 border border-gray-300 rounded-lg bg-white shadow-sm cursor-pointer hover:bg-gray-100 relative " (click)="onSavedWordClick(word)">
           <strong>{{ word.input_lang }}:&nbsp;</strong> {{ word.input_text }} <br>
           <strong>{{ word.output_lang }}:&nbsp;</strong> {{ word.output_text }}
+          <button (click)="deleteWord(word._id)" class="delete-button">
+            <i class="fas fa-trash text-red-500 absolute bottom-2 right-2 hover:text-red-700"></i>
+          </button>
         </li>
         <li *ngIf="savedWords.length === 0" class="text-gray-500">No saved words found.</li>
       </ul>

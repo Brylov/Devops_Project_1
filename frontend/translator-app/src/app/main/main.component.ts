@@ -128,5 +128,27 @@ export class MainComponent {
       this.copySuccess = false;
     }, 2000); // Message will disappear after 2 seconds
   }
+
+  deleteWord(wordId: number): void {
+    if (!confirm('Are you sure you want to delete this word?')) {
+      return; // If user cancels the confirmation, do nothing
+    }
+    
+    this.translationService.deleteWord(wordId).subscribe(
+      (response: any) => {
+        if (response.success) {
+          // If word is deleted successfully, update savedWords array or perform any necessary actions
+          this.getLastWords(); // Refresh the list of saved words
+        } else {
+          console.error('Error deleting word:', response.error);
+          // Display error message to the user or handle the error in a suitable way
+        }
+      },
+      (error) => {
+        console.error('Error deleting word:', error);
+        // Display error message to the user or handle the error in a suitable way
+      }
+    );
+  }
   
 }

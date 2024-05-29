@@ -26,4 +26,8 @@ export class TranslationService {
     return this.http.post<any>(`${this.apiUrl}/saveword`, { input_text: inputText, output_text: outputText, input_lang: inputLang, output_lang: outputLang});
   }
 
+  deleteWord(wordId: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/deleteword/${wordId}`);
+  }
+
 }
