@@ -86,16 +86,19 @@ docker:
 
 jenkins:
     adding the deploy image to ECR, on non portfolio purpuses, i have to run the jenkins of EC2 and give IAM role to the machine to connect to ECR,
-    but on PORTFOLIO -- ill connect with my aws account to the awscli of the jenkins machine instead, the jenkins is running locally (badget considorations)
+    but on PORTFOLIO -- ill connect with my aws account to the awscli of the jenkins container instead, the jenkins is running locally (badget considorations)
     ....
-    after tring to run jenkins ci/cd i stucked on a problem to run build to the image and run them with the lack of .env and init-mongo.js files that i put on
-    .gitignore cus they contain password and other sensetive data, i have some options how to prevent this from getting stuck on pipeline.
-    - save this data (enviroments variables at most) on jenkins machine.
+    after tring to run jenkins ci/cd i stucked on a problem to run build to the image and run them without of .env and init-mongo.js files that i put on
+    .gitignore cus they contain passwords and other sensetive data, i have some options how to prevent this from getting stuck on pipeline.
+    - save this data (enviroments variables at most) on jenkins.
     - use vault as secrets keeper.
     - use github secrets to save this data.
     - the solution I did, encrypt those file with ace256 and keep the decryption key as credential on jenkins.
 
-    
 
+encryption:
+    `openssl enc -aes-256-cbc -salt -in .env -out .env.enc -k <passphrase>`
+decryption:
+    `openssl enc -aes-256-cbc -d -in .env.enc -out .env -k <passphrase>`
 
 
