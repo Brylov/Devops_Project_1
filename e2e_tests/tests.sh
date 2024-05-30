@@ -7,7 +7,7 @@ FRONTEND_URL="http://localhost"
 BACKEND_URL="http://localhost:5000"
 
 # Test 1: Check if the frontend is up
-response=$(curl --write-out "%{http_code}\n" --silent --output /dev/null "$FRONTEND_URL")
+response=$(curl --write-out "%{http_code}\n" --silent --output /dev/null $FRONTEND_URL)
 if [ "$response" -ne 200 ]; then
   echo "Frontend is not reachable. HTTP Status: $response"
   exit 1
@@ -15,7 +15,8 @@ fi
 echo "Frontend is reachable."
 
 # Test 2: Check if the backend is up
-response=$(curl --write-out "%{http_code}\n" --silent --output /dev/null "$BACKEND_URL")
+response=$(curl --write-out "%{http_code}\n" --silent --output /dev/null "$BACKEND_URL/healthcheck")
+echo "$response"
 if [ "$response" -ne 200 ]; then
   echo "Backend is not reachable. HTTP Status: $response"
   exit 1
