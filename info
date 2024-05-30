@@ -85,11 +85,11 @@ docker:
       after this change the build finished successfully with the dist folder i know how to work with.
 
 jenkins:
-    adding the deploy image to ECR, on non portfolio purpuses, i have to run the jenkins of EC2 and give IAM role to the machine to connect to ECR,
-    but on PORTFOLIO -- ill connect with my aws account to the awscli of the jenkins container instead, the jenkins is running locally (badget considorations)
+    adding the deploy image to ECR, on non portfolio purpuses, i have to run the jenkins on EC2 and give IAM role to the machine to get access to ECR,
+    but on PORTFOLIO -- ill connect with my aws account to the awscli on the jenkins container instead, the jenkins is running locally (badget considorations)
     ....
-    after tring to run jenkins ci/cd i stucked on a problem to run build to the image and run them without of .env and init-mongo.js files that i put on
-    .gitignore cus they contain passwords and other sensetive data, i have some options how to prevent this from getting stuck on pipeline.
+    after tring to run jenkins ci/cd i stucked on a problem to run build to the image and run them without of ".env" and "init-mongo.js" files that i put on
+    .gitignore cus they contain passwords and other sensetive data, i have some ideas how to prevent this from getting stuck on pipeline.
     - save this data (enviroments variables at most) on jenkins.
     - use vault as secrets keeper.
     - use github secrets to save this data.

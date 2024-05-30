@@ -23,7 +23,6 @@ pipeline {
                     docker.build('backend-test', '-f Dockerfile.backend .')
                     docker.build('frontend-test', '-f Dockerfile.frontend .')
                     docker.build('mongodb-test', '-f Dockerfile.mongodb .')
-                    //sh "docker run --rm --name portfolio-translator --network jenkins_nw -d translator-test"
                 }
             }
         }
@@ -33,20 +32,15 @@ pipeline {
                 script {
                     sh 'cat .env'
                     def mongoContainer = docker.image('mongodb-test').run("--rm --name mongodb_jenkins_test --network internal_tests -p 27017:27017 --env-file .env")
-                    //waitForMongoDB()
+                    //waitForMongoDB() adding `--link mongo:mongo` is the alternative for the healthcheck function to mongo
                     docker.image('backend-test').run("--rm --name backend_jenkins_test -p 5000:5000  --network internal_tests --env-file .env --link mongodb_jenkins_test:mongodb")
                     docker.image('frontend-test').run("--rm --name frontend_jenkins_test -p 80:80 --network ${DOCKER_NETWORK} --network internal_tests")
-                    // Load environment variables from .env file
-                    // Run MongoDB container with environment variables              
-                    //sh "docker run --rm --name portfolio-translator --network jenkins_nw -d translator-test"
-
                 }
             }
         }
         stage('unit Tests') {
             steps {
                 script {                 
-                    // Run pytest inside the Docker container
                     sh 'docker exec backend_jenkins_test pytest -s -v test_app.py'
                 }
             }
@@ -55,8 +49,7 @@ pipeline {
         stage('E2E Tests') {
             steps {
                 script {                 
-                    // Run pytest inside the Docker container
-                    sh 'echo "E2E Tests..."'
+                    sh './e2e_tests/tests.sh'
                 }
             }
             post {
@@ -82,13 +75,27 @@ pipeline {
         always { 
             cleanWs()
         }
-        failure{
-            script{
-                sh 'docker stop mongodb_jenkins_test'
-                sh 'docker stop frontend_jenkins_test'
-                sh 'docker stop backend_jenkins_test'
-            }
+        failure {
+    script {
+        try {
+            sh 'docker stop mongodb_jenkins_test'
+        } catch (Exception e) {
+            echo "mongodb container crushed."
         }
+
+        try {
+            sh 'docker stop frontend_jenkins_test'
+        } catch (Exception e) {
+            echo "frontend container crushed."
+        }
+
+        try {
+            sh 'docker stop backend_jenkins_test'
+        } catch (Exception e) {
+            echo "backend container crushed."
+        }
+    }
+}
     }
 }
 def waitForMongoDB() {
