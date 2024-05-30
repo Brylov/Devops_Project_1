@@ -149,6 +149,11 @@ def deleteword(word_id):
         return jsonify({'success': False, 'error': 'Invalid word ID format.'}), 400
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
+    
+
+@app.route('/healthcheck', methods=['POST'])
+def healthcheck():
+    return jsonify({'success': True, 'message': 'Health Check Okay'}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
