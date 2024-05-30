@@ -151,7 +151,7 @@ def deleteword(word_id):
         return jsonify({'success': False, 'error': str(e)}), 500
     
 
-@app.route('/healthcheck', methods=['POST'])
+@app.route('/healthcheck', methods=['GET'])
 def healthcheck():
     return jsonify({'success': True, 'message': 'Health Check Okay'}), 200
 
