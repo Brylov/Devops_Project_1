@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # URL of your frontend and backend
-FRONTEND_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' frontend_jenkins_test)
-BACKEND_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' backend_jenkins_test)
+FRONTEND_IP=$(docker inspect -f '{{.NetworkSettings.Networks.jenkins_nw.IPAddress}}' frontend_jenkins_test)
+BACKEND_IP=$(docker inspect -f '{{.NetworkSettings.Networks.jenkins_nw.IPAddress}}' backend_jenkins_test)
 FRONTEND_URL="http://$FRONTEND_IP"
 BACKEND_URL="http://$BACKEND_IP:5000/"
 

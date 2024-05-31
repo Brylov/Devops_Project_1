@@ -32,8 +32,9 @@ pipeline {
                 script {
                     def mongoContainer = docker.image('mongodb-test').run("--rm --name mongodb_jenkins_test --network internal_tests -p 27017:27017 --env-file .env")
                     //waitForMongoDB() adding `--link mongo:mongo` is the alternative for the healthcheck function to mongo
-                    docker.image('backend-test').run("--rm --name backend_jenkins_test -p 5000:5000 --network ${DOCKER_NETWORK} --network internal_tests --env-file .env --link mongodb_jenkins_test:mongodb")
+                    docker.image('backend-test').run("--rm --name backend_jenkins_test -p 5000:5000 --network internal_tests --network ${DOCKER_NETWORK} --env-file .env --link mongodb_jenkins_test:mongodb")
                     docker.image('frontend-test').run("--rm --name frontend_jenkins_test -p 80:80 --network ${DOCKER_NETWORK} --network internal_tests")
+
                 }
             }
         }
