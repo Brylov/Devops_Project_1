@@ -1,10 +1,10 @@
 #!/bin/bash
 
-set -e
-
 # URL of your frontend and backend
-FRONTEND_URL="http://localhost"
-BACKEND_URL="http://localhost:5000/"
+FRONTEND_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' frontend_jenkins_test)
+BACKEND_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' backend_jenkins_test)
+FRONTEND_URL="http://$FRONTEND_IP"
+BACKEND_URL="http://$BACKEND_IP:5000/"
 
 # Test 1: Check if the frontend is up
 response=$(curl --write-out "%{http_code}\n" --silent --output /dev/null $FRONTEND_URL)
