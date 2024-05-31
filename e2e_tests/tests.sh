@@ -25,8 +25,7 @@ echo "Backend is reachable."
 
 
 translation_response=$(curl -s -X POST -H "Content-Type: application/json" -d '{"text": "hello", "inputLang": "en", "outputLang": "ja"}' "$BACKEND_URL/translate")
-translated_text=$(echo $translation_response | grep -oP '"translated_text":"\\K[^"]+')
-
+translated_text=$(echo "$translation_response" | grep -oP '"translated_text":"\\K[^"]+' | python3 -c 'import sys,json; print(json.loads(sys.stdin.read()).encode().decode("unicode-escape"))')
 if [ "$translated_text" != "こんにちは" ]; then
   echo "Translation test failed. Response: $translation_response"
   exit 1
@@ -36,3 +35,4 @@ echo "Translation test passed."
 # Add more tests as needed
 
 echo "E2E tests completed successfully."
+
