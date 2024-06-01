@@ -71,7 +71,7 @@ pipeline {
         }
         stage('Deploy backend') {
             when {
-                allOf {
+                anyOf {
                     changeset "src/**"
                     expression {
                         return sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\.env" || echo "no"', returnStatus: true) == 0
@@ -95,7 +95,7 @@ pipeline {
         }
         stage('Deploy frontend') {
             when {
-                allOf {
+                anyOf {
                     changeset "frontend/**"                   
                     not {
                         expression {
@@ -116,7 +116,7 @@ pipeline {
         }
         stage('Deploy Mongodb') {
             when {
-                allOf {
+                anyOf {
                     changeset "initdb.d/**"      
                     expression {
                         return sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\.env" || echo "no"', returnStatus: true) == 0

@@ -35,7 +35,7 @@ EOD(End of Day):
             adding the file/folder to .gitignore
             ```
             git add .gitignore
-            git commit -m "Add sensitive file to .gitignore 
+            git commit -m "Add sensitive file to .gitignore"
             git rm --cached path/to/sensitive/file #to untrack the sensetive file/folder
             git commit -m "Remove sensitive file from tracking"
             git push origin dev
