@@ -2,7 +2,13 @@ pipeline {
     agent any
 
     environment {
+        ECR_URL_MONGODB = "587447957359.dkr.ecr.us-west-2.amazonaws.com/portfolio-mongodb"
+        ECR_URL_FRONTEND = "587447957359.dkr.ecr.us-west-2.amazonaws.com/portfolio-frontend"
+        ECR_URL_BACKEND = "587447957359.dkr.ecr.us-west-2.amazonaws.com/portfolio-backend"
         DOCKER_NETWORK = 'jenkins_nw'
+        AWS_REGION = "us-east-1"
+        IMAGE_TAG = "1.0.0"
+
     }
     
     stages {
@@ -63,41 +69,107 @@ pipeline {
                 }
             }
         }
-        stage('Deploy') {
+        stage('Deploy backend') {
+            when {
+                allOf {
+                    changeset "src/**"
+                    script {
+                        return sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\.env" || echo "no"', returnStatus: true) == 0
+                    }
+                    not {
+                        script {
+                            return sh(script: "aws ecr describe-images --repository-name portfolio-backend --image-ids imageTag=${IMAGE_TAG} --region ${AWS_REGION}", returnStatus: true) == 0
+                        }
+                    }         
+                }
+            }
             steps {
-                // Replace this with your deployment steps
-                sh 'echo "Deploying..."'
+                script {
+                    IMAGE_TAG = sh (script: "aws ecr list-images --repository-name portfolio-backend --filter --region ${AWS_REGION} tagStatus=TAGGED | grep imageTag | awk ' { print \$2 } ' |sort -V -r | head -1 | sed 's/\"//g' |tr \".\" \" \" | awk ' { print \$1 \".\" \$2 \".\" \$3+1 } '", returnStdout: true).trim()
+                    def image = docker.build("portfolio-backend", '-f Dockerfile.backend .')
+                    docker.withRegistry("https://${ECR_URL_BACKEND}", '') {
+                        image.push("${IMAGE_TAG}")
+                    }
+                }
+            }
+        }
+        stage('Deploy frontend') {
+            when {
+                allOf {
+                    changeset "frontend/**"                   
+                    not {
+                        script {
+                            return sh(script: "aws ecr describe-images --repository-name portfolio-frontend --image-ids imageTag=${IMAGE_TAG} --region ${AWS_REGION}", returnStatus: true) == 0
+                        }
+                    }         
+                }
+            }
+            steps {
+                script {
+                    IMAGE_TAG = sh (script: "aws ecr list-images --repository-name portfolio-frontend --filter --region ${AWS_REGION} tagStatus=TAGGED | grep imageTag | awk ' { print \$2 } ' |sort -V -r | head -1 | sed 's/\"//g' |tr \".\" \" \" | awk ' { print \$1 \".\" \$2 \".\" \$3+1 } '", returnStdout: true).trim()
+                    def image = docker.build("portfolio-frontend", '-f Dockerfile.frontend .')
+                    docker.withRegistry("https://${ECR_URL_FRONTEND}", '') {
+                        image.push("${IMAGE_TAG}")
+                    }
+                }
+            }
+        }
+        stage('Deploy Mongodb') {
+            when {
+                allOf {
+                    changeset "initdb.d/**"      
+                    script {
+                        return sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\.env" || echo "no"', returnStatus: true) == 0
+                    }             
+                    not {
+                        script {
+                            return sh(script: "aws ecr describe-images --repository-name portfolio-mongodb --image-ids imageTag=${IMAGE_TAG} --region ${AWS_REGION}", returnStatus: true) == 0
+                        }
+                    }         
+                }
+            }
+            steps {
+                script {
+                    IMAGE_TAG = sh (script: "aws ecr list-images --repository-name portfolio-mongodb --filter --region ${AWS_REGION} tagStatus=TAGGED | grep imageTag | awk ' { print \$2 } ' |sort -V -r | head -1 | sed 's/\"//g' |tr \".\" \" \" | awk ' { print \$1 \".\" \$2 \".\" \$3+1 } '", returnStdout: true).trim()
+                    def image = docker.build("portfolio-mongodb", '-f Dockerfile.mongodb .')
+                    docker.withRegistry("https://${ECR_URL_MONGODB}", '') {
+                        image.push("${IMAGE_TAG}")
+                    }
+                }
             }
         }
     }
-    
     post { 
         always { 
             cleanWs()
         }
         failure {
-    script {
-        try {
-            sh 'docker stop mongodb_jenkins_test'
-        } catch (Exception e) {
-            echo "mongodb container crushed."
-        }
+            script {
+                try {
+                    sh 'docker stop mongodb_jenkins_test'
+                } catch (Exception e) {
+                    echo "mongodb container crushed."
+                }
 
-        try {
-            sh 'docker stop frontend_jenkins_test'
-        } catch (Exception e) {
-            echo "frontend container crushed."
-        }
+                try {
+                    sh 'docker stop frontend_jenkins_test'
+                } catch (Exception e) {
+                    echo "frontend container crushed."
+                }
 
-        try {
-            sh 'docker stop backend_jenkins_test'
-        } catch (Exception e) {
-            echo "backend container crushed."
+                try {
+                   sh 'docker stop backend_jenkins_test'
+                } catch (Exception e) {
+                    echo "backend container crushed."
+                }
+            }
         }
     }
 }
-    }
-}
+
+
+    
+
 def waitForMongoDB() {
     def maxRetries = 30
     def retryInterval = 2 // seconds
