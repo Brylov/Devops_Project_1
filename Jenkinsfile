@@ -78,14 +78,17 @@ pipeline {
                     }
                     not {
                         expression {
-                            return sh(script: "aws ecr describe-images --repository-name portfolio-backend --image-ids imageTag=${IMAGE_TAG} --region ${AWS_REGION}", returnStatus: true) == 0
+                            return sh(script: "aws ecr describe-images --repository-name portfolio-backend --image-ids imageTag=1.0.0 --region ${AWS_REGION}", returnStatus: true) == 0
                         }
                     }         
                 }
             }
             steps {
                 script {
-                    IMAGE_TAG = sh (script: "aws ecr list-images --repository-name portfolio-backend --filter --region ${AWS_REGION} tagStatus=TAGGED | grep imageTag | awk ' { print \$2 } ' |sort -V -r | head -1 | sed 's/\"//g' |tr \".\" \" \" | awk ' { print \$1 \".\" \$2 \".\" \$3+1 } '", returnStdout: true).trim()
+                    IMAGE_TAG = sh (script: "aws ecr list-images --repository-name portfolio-backend --filter --region ${AWS_REGION} tagStatus=TAGGED | grep imageTag | awk ' { print \$2 } ' |sort -V -r | head -1 | sed 's/\"//g' |tr \".\" \" \" | awk ' { print \$1 \".\" \$2 \".\" \$3+1 } '", returnStdout: true).trim()                  
+                    if (IMAGE_TAG == ""){
+                        IMAGE_TAG = "1.0.0"
+                    }
                     def image = docker.build("portfolio-backend", '-f Dockerfile.backend .')
                     docker.withRegistry("https://${ECR_URL_BACKEND}", '') {
                         image.push("${IMAGE_TAG}")
@@ -107,6 +110,9 @@ pipeline {
             steps {
                 script {
                     IMAGE_TAG = sh (script: "aws ecr list-images --repository-name portfolio-frontend --filter --region ${AWS_REGION} tagStatus=TAGGED | grep imageTag | awk ' { print \$2 } ' |sort -V -r | head -1 | sed 's/\"//g' |tr \".\" \" \" | awk ' { print \$1 \".\" \$2 \".\" \$3+1 } '", returnStdout: true).trim()
+                    if (IMAGE_TAG == ""){
+                        IMAGE_TAG = "1.0.0"
+                    }
                     def image = docker.build("portfolio-frontend", '-f Dockerfile.frontend .')
                     docker.withRegistry("https://${ECR_URL_FRONTEND}", '') {
                         image.push("${IMAGE_TAG}")
@@ -131,6 +137,9 @@ pipeline {
             steps {
                 script {
                     IMAGE_TAG = sh (script: "aws ecr list-images --repository-name portfolio-mongodb --filter --region ${AWS_REGION} tagStatus=TAGGED | grep imageTag | awk ' { print \$2 } ' |sort -V -r | head -1 | sed 's/\"//g' |tr \".\" \" \" | awk ' { print \$1 \".\" \$2 \".\" \$3+1 } '", returnStdout: true).trim()
+                    if (IMAGE_TAG == ""){
+                        IMAGE_TAG = "1.0.0"
+                    }
                     def image = docker.build("portfolio-mongodb", '-f Dockerfile.mongodb .')
                     docker.withRegistry("https://${ECR_URL_MONGODB}", '') {
                         image.push("${IMAGE_TAG}")
