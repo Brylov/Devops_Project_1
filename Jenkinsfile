@@ -65,6 +65,7 @@ pipeline {
                         sh 'docker stop mongodb_jenkins_test'
                         sh 'docker stop frontend_jenkins_test'
                         sh 'docker stop backend_jenkins_test'
+                        
                     }
                 }
             }
@@ -89,6 +90,7 @@ pipeline {
                     if (IMAGE_TAG == ""){
                         IMAGE_TAG = "1.0.0"
                     }
+                    sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_URL_BACKEND}"
                     def image = docker.build("portfolio-backend", '-f Dockerfile.backend .')
                     docker.withRegistry("https://${ECR_URL_BACKEND}", '') {
                         image.push("${IMAGE_TAG}")
@@ -113,6 +115,7 @@ pipeline {
                     if (IMAGE_TAG == ""){
                         IMAGE_TAG = "1.0.0"
                     }
+                    sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_URL_FRONTEND}"
                     def image = docker.build("portfolio-frontend", '-f Dockerfile.frontend .')
                     docker.withRegistry("https://${ECR_URL_FRONTEND}", '') {
                         image.push("${IMAGE_TAG}")
@@ -140,6 +143,7 @@ pipeline {
                     if (IMAGE_TAG == ""){
                         IMAGE_TAG = "1.0.0"
                     }
+                    sh "aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_URL_MONGODB}"
                     def image = docker.build("portfolio-mongodb", '-f Dockerfile.mongodb .')
                     docker.withRegistry("https://${ECR_URL_MONGODB}", '') {
                         image.push("${IMAGE_TAG}")
