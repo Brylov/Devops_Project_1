@@ -73,13 +73,15 @@ pipeline {
         stage('Deploy backend') {
             when {
                 anyOf {
-                    changeset "src/**"
                     expression {
-                        return sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\.env" || echo "no"', returnStatus: true) == 0
+                        sh(script: 'git diff --name-only HEAD~1 HEAD | grep --quiet "^src/.*" || echo "no"', returnStatus: true) == 0       
+                    }
+                    expression {
+                        sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\.env" || echo "no"', returnStatus: true) == 0
                     }
                     not {
                         expression {
-                            return sh(script: "aws ecr describe-images --repository-name portfolio-backend --image-ids imageTag=1.0.0 --region ${AWS_REGION}", returnStatus: true) == 0
+                            sh(script: "aws ecr describe-images --repository-name portfolio-backend --image-ids imageTag=1.0.0 --region ${AWS_REGION}", returnStatus: true) == 0
                         }
                     }         
                 }
@@ -101,10 +103,12 @@ pipeline {
         stage('Deploy frontend') {
             when {
                 anyOf {
-                    changeset "frontend/**"                   
+                    expression {
+                        sh(script: 'git diff --name-only HEAD~1 HEAD | grep --quiet "^frontend/.*" || echo "no"', returnStatus: true) == 0       
+                    }                  
                     not {
                         expression {
-                            return sh(script: "aws ecr describe-images --repository-name portfolio-frontend --image-ids imageTag=${IMAGE_TAG} --region ${AWS_REGION}", returnStatus: true) == 0
+                            sh(script: "aws ecr describe-images --repository-name portfolio-frontend --image-ids imageTag=${IMAGE_TAG} --region ${AWS_REGION}", returnStatus: true) == 0
                         }
                     }         
                 }
@@ -126,13 +130,15 @@ pipeline {
         stage('Deploy Mongodb') {
             when {
                 anyOf {
-                    changeset "initdb.d/**"      
                     expression {
-                        return sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\.env" || echo "no"', returnStatus: true) == 0
+                        sh(script: 'git diff --name-only HEAD~1 HEAD | grep --quiet "^initdb.d/.*" || echo "no"', returnStatus: true) == 0       
+                    }     
+                    expression {
+                        sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\.env" || echo "no"', returnStatus: true) == 0
                     }             
                     not {
                         expression {
-                            return sh(script: "aws ecr describe-images --repository-name portfolio-mongodb --image-ids imageTag=${IMAGE_TAG} --region ${AWS_REGION}", returnStatus: true) == 0
+                            sh(script: "aws ecr describe-images --repository-name portfolio-mongodb --image-ids imageTag=${IMAGE_TAG} --region ${AWS_REGION}", returnStatus: true) == 0
                         }
                     }         
                 }
