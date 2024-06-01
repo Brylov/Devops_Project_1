@@ -2,9 +2,9 @@ pipeline {
     agent any
 
     environment {
-        ECR_URL_MONGODB = "587447957359.dkr.ecr.us-west-2.amazonaws.com/portfolio-mongodb"
-        ECR_URL_FRONTEND = "587447957359.dkr.ecr.us-west-2.amazonaws.com/portfolio-frontend"
-        ECR_URL_BACKEND = "587447957359.dkr.ecr.us-west-2.amazonaws.com/portfolio-backend"
+        ECR_URL_MONGODB = "587447957359.dkr.ecr.us-east-1.amazonaws.com/portfolio-mongodb"
+        ECR_URL_FRONTEND = "587447957359.dkr.ecr.us-east-1.amazonaws.com/portfolio-frontend"
+        ECR_URL_BACKEND = "587447957359.dkr.ecr.us-east-1.amazonaws.com/portfolio-backend"
         DOCKER_NETWORK = 'jenkins_nw'
         AWS_REGION = "us-east-1"
         IMAGE_TAG = "1.0.0"
