@@ -73,11 +73,11 @@ pipeline {
             when {
                 allOf {
                     changeset "src/**"
-                    script {
+                    expression {
                         return sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\.env" || echo "no"', returnStatus: true) == 0
                     }
                     not {
-                        script {
+                        expression {
                             return sh(script: "aws ecr describe-images --repository-name portfolio-backend --image-ids imageTag=${IMAGE_TAG} --region ${AWS_REGION}", returnStatus: true) == 0
                         }
                     }         
@@ -98,7 +98,7 @@ pipeline {
                 allOf {
                     changeset "frontend/**"                   
                     not {
-                        script {
+                        expression {
                             return sh(script: "aws ecr describe-images --repository-name portfolio-frontend --image-ids imageTag=${IMAGE_TAG} --region ${AWS_REGION}", returnStatus: true) == 0
                         }
                     }         
@@ -118,11 +118,11 @@ pipeline {
             when {
                 allOf {
                     changeset "initdb.d/**"      
-                    script {
+                    expression {
                         return sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\.env" || echo "no"', returnStatus: true) == 0
                     }             
                     not {
-                        script {
+                        expression {
                             return sh(script: "aws ecr describe-images --repository-name portfolio-mongodb --image-ids imageTag=${IMAGE_TAG} --region ${AWS_REGION}", returnStatus: true) == 0
                         }
                     }         
