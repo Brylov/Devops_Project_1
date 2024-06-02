@@ -9,7 +9,7 @@ from flask_cors import CORS
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 # Check if running in a test environment (e.g., Jenkins)
 is_test_environment = os.environ.get('JENKINS_TEST')
 
