@@ -7,7 +7,7 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class TranslationService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl = "http://localhost:5000/api";
 
   constructor(private http: HttpClient) {}
 
@@ -29,5 +29,10 @@ export class TranslationService {
 
   deleteWord(wordId: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/deleteword/${wordId}`);
+  }
+
+  getAudioUrl(filename: string): string {
+    const cacheBuster = new Date().getTime();
+    return `${this.apiUrl}/get_tts?filename=${filename}&cb=${cacheBuster}`;
   }
 }

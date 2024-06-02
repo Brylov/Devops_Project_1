@@ -68,7 +68,7 @@ export class MainComponent {
       (response) => {
         // Add a cache-busting parameter to the audio URL
         const cacheBuster = new Date().getTime();
-        this.audioUrl = `http://localhost:5000/get_tts?filename=${response.tts_filename}&cb=${cacheBuster}`;
+        this.audioUrl = this.translationService.getAudioUrl(response.tts_filename);
         this.playAudio(this.audioUrl);
       },
       (error) => {
