@@ -19,5 +19,11 @@ COPY --from=builder /usr/src/app/dist/translator-app/ /usr/share/nginx/html
 COPY ./nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80
+# Copy the entrypoint script
+COPY ./frontend.entrypoint.sh /entrypoint.sh
 
-CMD [ "nginx", "-g", "daemon off;" ]
+# Make the script executable
+RUN chmod +x /entrypoint.sh
+
+# Set the entry point
+ENTRYPOINT ["/entrypoint.sh"]

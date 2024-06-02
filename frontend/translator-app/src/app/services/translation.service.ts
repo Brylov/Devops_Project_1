@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../enviroments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TranslationService {
-  private apiUrl = 'http://localhost:5000';
+  private apiUrl = environment.apiUrl;
   response! : Observable<any> 
   constructor(private http: HttpClient) {}
 
