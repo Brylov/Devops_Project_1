@@ -12,47 +12,22 @@ export class TranslationService {
   constructor(private http: HttpClient) {}
 
   translateText(text: string, inputLang: string, outputLang: string): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*' 
-    });
-
-    return this.http.post<any>(`${this.apiUrl}/translate`, { text, inputLang, outputLang }, { headers });
+    return this.http.post<any>(`${this.apiUrl}/translate`, { text, inputLang, outputLang });
   }
 
   getTextToSpeech(text: string, lang: string): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*' 
-    });
-
-    return this.http.post<any>(`${this.apiUrl}/tts`, { text, lang }, { headers });
+    return this.http.post<any>(`${this.apiUrl}/tts`, { text, lang });
   }
   
   getLastWords(): Observable<any[]> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*' 
-    });
-
-    return this.http.get<any[]>(`${this.apiUrl}/last_words`, { headers });
+    return this.http.get<any[]>(`${this.apiUrl}/last_words`);
   }
 
   saveWord(inputText: string, outputText: string, inputLang: string, outputLang: string): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*' 
-    });
-
-    return this.http.post<any>(`${this.apiUrl}/saveword`, { input_text: inputText, output_text: outputText, input_lang: inputLang, output_lang: outputLang}, { headers });
+    return this.http.post<any>(`${this.apiUrl}/saveword`, { input_text: inputText, output_text: outputText, input_lang: inputLang, output_lang: outputLang});
   }
 
   deleteWord(wordId: number): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
-    });
-
-    return this.http.delete<any>(`${this.apiUrl}/deleteword/${wordId}`, { headers });
+    return this.http.delete<any>(`${this.apiUrl}/deleteword/${wordId}`);
   }
 }
