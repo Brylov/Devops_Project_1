@@ -101,4 +101,26 @@ encryption:
 decryption:
     `openssl enc -aes-256-cbc -d -in .env.enc -out .env -k <passphrase>`
 
+DAY 4:
+
+Jenkins:
+    alot of problems in the jenkins file -- 1. somehow the pytest wasn't finished successfully
+    if the internal_tests network been after the jenkins_nw but if it was before it worked.
+    2.after adding the deploy stage, had a big bad practice of what if only the backend is changed, so why i have to deply the mongo and frontend as well.
+    so I managed to find a solution with some "when" statements to depoly only when somthing changed in the related files, by using changeset "<dir>".
+    3.another issue with the deploy is the tags system, i had to make a atag system to tag automatic the images, later on i had option to change the minor
+    as well via commit comment.
+
+Terraform:
+    to store the images i had to create 3 ecrs on aws.added terraform project with a simple main.tf that create 3 ecrs.
+
+DAY 5:
+
+
+
+
+
+
+
+
 

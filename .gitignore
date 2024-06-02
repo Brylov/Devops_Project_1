@@ -230,7 +230,5 @@ terraform.tfvars
 *.tfvars.json
 
 # Ignore any IDE specific files
-.vscode/
-.idea/
 *.swp
 
