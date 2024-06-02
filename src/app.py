@@ -9,8 +9,15 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app) 
 
+
+# Check if running in a test environment (e.g., Jenkins)
+is_test_environment = os.environ.get('JENKINS_TEST') == 'true'
+
+if not is_test_environment:
 # Retrieve MongoDB connection details from environment variables
-mongodb_uri = os.getenv('MONGODB_URI')
+    mongodb_uri = os.getenv('MONGODB_URI')
+else :
+    mongodb_uri = os.getenv('MONGODB_URI_TESTS')
 
 # Initialize MongoDB client
 client = MongoClient(mongodb_uri)
