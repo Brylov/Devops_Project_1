@@ -20,14 +20,10 @@ else:
     # If running in a test environment, set a default value for MongoDB service DNS
     mongo_service_dns = 'mongodb'
 
-if not is_test_environment:
-    username = os.environ.get('MONGO_USERNAME')  # Replace 'your_username' with your MongoDB username
-    password = os.environ.get('MONGO_PASSWORD')
-    database = os.environ.get('MONGO_DB') # Replace 'your_password' with your MongoDB password
-    mongodb_uri = f'mongodb://{username}:{password}@{mongo_service_dns}:27017/{database}'
-else:
-    # Use a separate URI for tests if needed
-    mongodb_uri = os.getenv('MONGODB_URI_TESTS')
+username = os.environ.get('MONGO_USERNAME')  # Replace 'your_username' with your MongoDB username
+password = os.environ.get('MONGO_PASSWORD')
+database = os.environ.get('MONGO_DB') # Replace 'your_password' with your MongoDB password
+mongodb_uri = f'mongodb://{username}:{password}@{mongo_service_dns}:27017/{database}'
 
 # Initialize MongoDB client
 client = MongoClient(mongodb_uri)
