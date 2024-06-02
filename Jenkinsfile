@@ -8,6 +8,8 @@ pipeline {
         DOCKER_NETWORK = 'jenkins_nw'
         AWS_REGION = "us-east-1"
         IMAGE_TAG = "1.0.0"
+        JENKINS_TEST = 'true'
+
 
     }
     
