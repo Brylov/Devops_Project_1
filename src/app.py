@@ -11,7 +11,7 @@ CORS(app)
 
 
 # Check if running in a test environment (e.g., Jenkins)
-is_test_environment = os.environ.get('JENKINS_TEST') == 'true'
+is_test_environment = os.environ.get('JENKINS_TEST')
 
 if not is_test_environment:
 # Retrieve MongoDB connection details from environment variables
