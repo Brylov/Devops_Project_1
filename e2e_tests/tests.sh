@@ -4,7 +4,7 @@
 FRONTEND_IP=$(docker inspect -f '{{.NetworkSettings.Networks.jenkins_nw.IPAddress}}' frontend_jenkins_test)
 BACKEND_IP=$(docker inspect -f '{{.NetworkSettings.Networks.jenkins_nw.IPAddress}}' backend_jenkins_test)
 FRONTEND_URL="http://$FRONTEND_IP"
-BACKEND_URL="http://$BACKEND_IP:5000/"
+BACKEND_URL="http://$BACKEND_IP:5000/api"
 
 # Test 1: Check if the frontend is up
 response=$(curl --write-out "%{http_code}\n" --silent --output /dev/null $FRONTEND_URL)
