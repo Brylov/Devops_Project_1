@@ -109,7 +109,7 @@ pipeline {
                         return sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\Dockerfile.frontend"', returnStatus: true) == 0
                     }   
                     expression {
-                        return sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\front.entrypoint.sh"', returnStatus: true) == 0
+                        return sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\frontend.entrypoint.sh"', returnStatus: true) == 0
                     }              
                     not {
                         expression {
