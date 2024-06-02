@@ -110,7 +110,10 @@ pipeline {
                     }   
                     expression {
                         return sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\frontend.entrypoint.sh"', returnStatus: true) == 0
-                    }              
+                    }    
+                    expression {
+                        return sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\nginx.conf"', returnStatus: true) == 0
+                    }          
                     not {
                         expression {
                             return sh(script: "aws ecr describe-images --repository-name portfolio-frontend --image-ids imageTag=1.0.0 --region ${AWS_REGION}", returnStatus: true) == 0
