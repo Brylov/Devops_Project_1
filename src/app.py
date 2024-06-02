@@ -24,6 +24,7 @@ username = os.environ.get('MONGO_USERNAME')  # Replace 'your_username' with your
 password = os.environ.get('MONGO_PASSWORD')
 database = os.environ.get('MONGO_DB') # Replace 'your_password' with your MongoDB password
 mongodb_uri = f'mongodb://{username}:{password}@{mongo_service_dns}:27017/{database}'
+print(f'Establish connection to {mongodb_uri}')
 
 # Initialize MongoDB client
 client = MongoClient(mongodb_uri)
