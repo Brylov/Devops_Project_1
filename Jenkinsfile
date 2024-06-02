@@ -75,7 +75,7 @@ pipeline {
                 anyOf {
                     changeset "src/**"
                     expression {
-                        return sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\.env"', returnStatus: true) == 0
+                        return sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\.env.enc"', returnStatus: true) == 0
                     }
                     not {
                         expression {
@@ -128,7 +128,7 @@ pipeline {
                 anyOf {
                     changeset "initdb.d/**"      
                     expression {
-                        return sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\.env"', returnStatus: true) == 0
+                        return sh(script: 'git diff --name-only HEAD~1 HEAD | grep -q "^\\.env.enc"', returnStatus: true) == 0
                     }             
                     not {
                         expression {

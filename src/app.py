@@ -14,9 +14,19 @@ CORS(app)
 is_test_environment = os.environ.get('JENKINS_TEST')
 
 if not is_test_environment:
-# Retrieve MongoDB connection details from environment variables
-    mongodb_uri = os.getenv('MONGODB_URI')
-else :
+    # Get MongoDB service DNS name from environment variable
+    mongo_service_dns = os.environ.get('MONGO_SERVICE_DNS')
+else:
+    # If running in a test environment, set a default value for MongoDB service DNS
+    mongo_service_dns = 'mongodb'
+
+if not is_test_environment:
+    username = os.environ.get('MONGO_USERNAME')  # Replace 'your_username' with your MongoDB username
+    password = os.environ.get('MONGO_PASSWORD')
+    database = os.environ.get('MONGO_DB') # Replace 'your_password' with your MongoDB password
+    mongodb_uri = f'mongodb://{username}:{password}@{mongo_service_dns}:27017/{database}'
+else:
+    # Use a separate URI for tests if needed
     mongodb_uri = os.getenv('MONGODB_URI_TESTS')
 
 # Initialize MongoDB client
