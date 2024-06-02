@@ -45,7 +45,7 @@ def get_next_sequence_value(sequence_name):
     )
     return counter['sequence_value']
 
-@app.route('/translate', methods=['POST'])
+@app.route('/api/translate', methods=['POST'])
 def translate():
     data = request.get_json()
     input_text = data.get('text')
@@ -57,7 +57,7 @@ def translate():
     
     return jsonify({'translated_text': translated_text})
 
-@app.route('/saveword', methods=['POST'])
+@app.route('/api/saveword', methods=['POST'])
 def saveword():
     data = request.get_json()
     input_text = data.get('input_text')
@@ -87,12 +87,12 @@ def saveword():
     
     return jsonify({'success': True, 'word': saved_word})
 
-@app.route('/last_words', methods=['GET'])
+@app.route('/api/last_words', methods=['GET'])
 def last_words():
     words = list(db.TranslatorHistory.find().sort('_id', -1).limit(10))
     return jsonify(words)
 
-app.route('/getword/<word_id>', methods=['GET'])
+app.route('/api/getword/<word_id>', methods=['GET'])
 def get_word(word_id):
     try:
         # Convert word_id to integer
@@ -115,7 +115,7 @@ def get_word(word_id):
         return jsonify({'success': False, 'error': str(e)}), 500
 
 
-@app.route('/tts', methods=['POST'])
+@app.route('/api/tts', methods=['POST'])
 def tts():
     data = request.get_json()
     text = data.get('text')
@@ -136,7 +136,7 @@ def tts():
 
     return jsonify({'tts_filename': f'{tts_file}'})
 
-@app.route('/get_tts', methods=['GET'])
+@app.route('/api/get_tts', methods=['GET'])
 def get_tts():
     tts_filename = request.args.get('filename')
     if not tts_filename:
@@ -148,7 +148,7 @@ def get_tts():
     print(tts_filename)
     return send_file(tts_filename, mimetype='audio/mpeg')
 
-@app.route('/deleteword/<word_id>', methods=['DELETE'])
+@app.route('/api/deleteword/<word_id>', methods=['DELETE'])
 def deleteword(word_id):
     try:
         # Convert word_id to integer
@@ -168,7 +168,7 @@ def deleteword(word_id):
         return jsonify({'success': False, 'error': str(e)}), 500
     
 
-@app.route('/healthcheck', methods=['GET'])
+@app.route('/api/healthcheck', methods=['GET'])
 def healthcheck():
     return jsonify({'success': True, 'message': 'Health Check Okay'}), 200
 
