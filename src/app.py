@@ -9,9 +9,7 @@ from flask_cors import CORS
 load_dotenv()
 
 app = Flask(__name__)
-
-
-
+CORS(app)
 # Check if running in a test environment (e.g., Jenkins)
 is_test_environment = os.environ.get('JENKINS_TEST')
 
@@ -23,7 +21,7 @@ if not is_test_environment:
 else:
     # If running in a test environment, set a default value for MongoDB service DNS
     mongo_service_dns = 'mongodb'
-    CORS(app)
+    
 
 username = os.environ.get('MONGO_USERNAME')  # Replace 'your_username' with your MongoDB username
 password = os.environ.get('MONGO_PASSWORD')
